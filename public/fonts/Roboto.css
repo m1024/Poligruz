@@ -1,0 +1,72 @@
+@font-face {
+    font-family: Roboto;
+    font-weight: 100;
+    font-style: normal;
+    src: url("/fonts/Roboto-100.ttf");
+}
+@font-face {
+    font-family: Roboto;
+    font-weight: 100;
+    font-style: italic;
+    src: url("/fonts/Roboto-100i.ttf");
+}
+@font-face {
+    font-family: Roboto;
+    font-weight: 300;
+    font-style: normal;
+    src: url("/fonts/Roboto-300.ttf");
+}
+@font-face {
+    font-family: Roboto;
+    font-weight: 300;
+    font-style: italic;
+    src: url("/fonts/Roboto-300i.ttf");
+}
+@font-face {
+    font-family: Roboto;
+    font-weight: 400;
+    font-style: normal;
+    src: url("/fonts/Roboto-400.ttf");
+}
+@font-face {
+    font-family: Roboto;
+    font-weight: 400;
+    font-style: italic;
+    src: url("/fonts/Roboto-400i.ttf");
+}
+@font-face {
+    font-family: Roboto;
+    font-weight: 500;
+    font-style: normal;
+    src: url("/fonts/Roboto-500.ttf");
+}
+@font-face {
+    font-family: Roboto;
+    font-weight: 500;
+    font-style: italic;
+    src: url("/fonts/Roboto-500i.ttf");
+}
+@font-face {
+    font-family: Roboto;
+    font-weight: 700;
+    font-style: normal;
+    src: url("/fonts/Roboto-700.ttf");
+}
+@font-face {
+    font-family: Roboto;
+    font-weight: 700;
+    font-style: italic;
+    src: url("/fonts/Roboto-700i.ttf");
+}
+@font-face {
+    font-family: Roboto;
+    font-weight: 900;
+    font-style: normal;
+    src: url("/fonts/Roboto-900.ttf");
+}
+@font-face {
+    font-family: Roboto;
+    font-weight: 900;
+    font-style: italic;
+    src: url("/fonts/Roboto-900i.ttf");
+}

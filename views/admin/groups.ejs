@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <%- include('../_layouts/head') %>
+</head>
+<body>
+<%- include('../_layouts/alerts') %>
+<%- include('../_layouts/sidebar') %>
+<%- include('../_layouts/fab') %>
+<div class="page" id="main">
+    <%- include('../_layouts/topbar') %>
+    <div class="content" id="content">
+        <div class="content-body">
+            <div class="panel">
+                <v-list :value="groups" keys="group_id" title="name" subtitle="description" :clickable="true" @click="showGroup"></v-list>
+            </div>
+        </div>
+    </div>
+    <script>
+        var content = new Vue({
+            el: '#content',
+            name: 'content',
+            data: {
+                groups: [],
+                groupsValues: {
+                    title: 'name',
+                    subtitle: 'description'
+                },
+                tree: []
+            },
+            created: function () {
+                var self = this;
+                socket.on('data', function (data) {
+                    if (data.name === 'getUsersGroups')
+                        self.groups = data.data;
+                    if (data.name === 'getPermissionsTree')
+                        self.tree = data.data;
+                });
+                bus.$on('fab-click', function () {
+                    if (!newGroupPage.visible && !groupPage.visible) {
+                        newGroupPage.show();
+                    }
+                });
+
+                if (topbar.permissionCheck('manageUsersGroups'))
+                    fab.show();
+
+                socket.emit('command', {name: 'getUsersGroups'});
+                socket.emit('command', {name: 'getPermissionsTree'});
+            },
+            methods: {
+                showGroup: function (group) {
+                    document.location.href = '/admin/groups?group_id=' + group.group_id;
+                }
+            }
+        })
+    </script>
+</div>
+<!-- groupPage -->
+<div class="subpage" :class="[visible ? 'visible' : '']" id="group-page">
+    <div class="topbar blue">
+        <div class="topbar-body">
+            <button class="toggle" @click="hide"><i class="mdi mdi-24px mdi-arrow-left"></i></button>
+            <span class="page-title">{{ group.name }}</span>
+            <span class="space stretch"></span>
+            <button class="toggle" @click="showSaveGroupModal"><i class="mdi mdi-24px mdi-check"></i></button>
+            <button class="toggle" @click="showDelModal"><i class="mdi mdi-24px mdi-delete"></i></button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="content-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="subtitle">Основные параметры</p>
+                    <div class="groupbox vertical">
+                        <v-input v-model="group.name" label="Название *"></v-input>
+                        <textarea class="bordered-textarea" v-model="group.description" placeholder="Описание"></textarea>
+                    </div>
+                    <p class="subtitle">Права доступа</p>
+                    <v-tree :tree="tree" :values="treeValues" class="wide"></v-tree>
+                </div>
+                <div class="col-md-6">
+                    <p class="subtitle">Список участников ({{ groupUsers.length }})</p>
+                    <v-list :value="groupUsers" keys="user_id" title="login" subtitle="full_snp" :clickable="true" @click="clickUser"></v-list>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', delModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Удалить группу</span>
+                    </div>
+                    <div class="panel-body">
+                        <p>Вы действительно хотите удалить группу "{{ group.name }}"?</p>
+                    </div>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="delGroup"><span>Да</span></button>
+                        <button class="inline-button" @click="hideDelModal"><span>Нет</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', addUserToGroupModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Добавить участника</span>
+                    </div>
+                    <v-list class="overflow" :value="notGroupUsers" title="login" subtitle="full_snp" :clickable="true" @click="addUserToGroup" :filter="notGroupUsersFilter"></v-list>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="hideAddUserToGroupModal"><span>Отмена</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', saveGroupModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Сохранить группу</span>
+                    </div>
+                    <div class="panel-body">
+                        <p>Вы действительно хотите перезаписать данные группы "{{ group.name }}"?</p>
+                    </div>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="saveGroup"><span>Да</span></button>
+                        <button class="inline-button" @click="hideSaveGroupModal"><span>Нет</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var groupPage = new Vue({
+        el: '#group-page',
+        name: 'groupPage',
+        data: {
+            visible: false,
+            group: {
+                group_id: 0,
+                name: '',
+                description: ''
+            },
+            groupUsers: [],
+            tree: [],
+            treeValues: {
+                title: 'title',
+                subtree: 'submenu',
+                type: 'type'
+            },
+            delModalVisible: false,
+            addUserToGroupModalVisible: false,
+            notGroupUsers: [],
+            notGroupUsersFilter: '',
+            groupPermissions: [],
+            saveGroupModalVisible: false
+        },
+        created: function () {
+            var self = this;
+            socket.on('data', function (data) {
+                if (data.name === 'getGroupUsers')
+                    self.groupUsers = data.data;
+                if (data.name === 'getNotGroupUsers')
+                    self.notGroupUsers = data.data;
+                if (data.name === 'getUsersGroup')
+                    self.show(cloneObject(data.data));
+                if (data.name === 'getPermissionsTree') {
+                    self.tree = data.data;
+                }
+                if (data.name === 'getUsersGroupPermissions') {
+                    self.groupPermissions = data.data;
+                    self.modifyTree(self.tree);
+                }
+                if (data.name === 'delUsersGroup' && data.data) {
+                    self.hide();
+                    socket.emit('command', {name: 'getUsersGroups'});
+                }
+                if (data.name === 'addUserToGroup' && data.data) {
+                    self.hideAddUserToGroupModal();
+                    socket.emit('command', {
+                        name: 'getUsersGroup',
+                        data: {
+                            groupID: self.group.group_id
+                        }
+                    });
+                }
+                if (data.name === 'saveUsersGroup' && data.data) {
+                    self.hideSaveGroupModal();
+                    console.log('hideSaveGroupModal');
+                }
+            });
+
+            bus.$on('fab-click', function () {
+                if (groupPage.visible)
+                    groupPage.showAddUserToGroupModal();
+            });
+
+            var groupID = getParameterByName('group_id');
+            if (groupID !== null) {
+                groupID = parseInt(groupID);
+                socket.emit('command', {
+                    name: 'getUsersGroup',
+                    data: {
+                        groupID: groupID
+                    }
+                });
+            }
+        },
+        methods: {
+            show: function (group) {
+                this.group = group;
+                var self = this;
+                socket.emit('command', {
+                    name: 'getGroupUsers',
+                    data: {
+                        groupID: self.group.group_id
+                    }
+                });
+                socket.emit('command', {
+                    name: 'getUsersGroupPermissions',
+                    data: {
+                        groupID: self.group.group_id
+                    }
+                });
+                this.visible = true;
+            },
+            hide: function () {
+                window.history.go(-1);
+            },
+            clickUser: function (user) {
+                window.location.href = '/admin/users?user_id=' + user.user_id;
+            },
+            showDelModal: function () {
+                this.delModalVisible = true;
+            },
+            hideDelModal: function () {
+                this.delModalVisible = false;
+            },
+            delGroup: function () {
+                var self = this;
+                socket.emit('command', {
+                    name: 'delUsersGroup',
+                    data: {
+                        groupID: self.group.group_id
+                    }
+                });
+                this.delModalVisible = false;
+            },
+            showAddUserToGroupModal: function () {
+                this.addUserToGroupModalVisible = true;
+                var self = this;
+                socket.emit('command', {
+                    name: 'getNotGroupUsers',
+                    data: {
+                        groupID: self.group.group_id
+                    }
+                });
+            },
+            hideAddUserToGroupModal: function () {
+                this.addUserToGroupModalVisible = false;
+            },
+            addUserToGroup: function (user) {
+                console.log(user);
+                var self = this;
+                socket.emit('command', {
+                    name: 'addUserToGroup',
+                    data: {
+                        groupID: self.group.group_id,
+                        userID: user.user_id
+                    }
+                });
+            },
+            showSaveGroupModal: function () {
+                this.saveGroupModalVisible = true;
+            },
+            hideSaveGroupModal: function () {
+                this.saveGroupModalVisible = false;
+            },
+            saveGroup: function () {
+                var self = this;
+                socket.emit('command', {
+                    name: 'saveUsersGroup',
+                    data: {
+                        group: self.group,
+                        tree: self.tree
+                    }
+                })
+            },
+
+            modifyTree: function (tree) {
+                var self = this;
+                for (var i = 0; i < tree.length; i++) {
+                    if (tree[i].type === 'checkbox') {
+                        tree[i].checked = self.groupPermissions.filter(function (value) {
+                            if (value.permission_id === tree[i].permission_id)
+                                return value;
+                        }).length === 1;
+                    }
+                    if (tree[i].submenu && tree[i].submenu.length > 0)
+                        self.modifyTree(tree[i].submenu);
+                }
+            }
+        }
+    })
+</script>
+<!-- newGoupPage -->
+<div class="subpage" :class="[visible ? 'visible' : '']" id="new-group-page">
+    <div class="topbar teal">
+        <div class="topbar-body">
+            <button class="toggle"><i class="mdi mdi-24px mdi-arrow-left" @click="hide"></i></button>
+            <span class="page-title">{{ group.name }}</span>
+            <span class="space stretch"></span>
+            <button class="toggle" @click="save"><i class="mdi mdi-24px mdi-check"></i></button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="content-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="subtitle">Основные параметры</p>
+                    <div class="groupbox vertical">
+                        <v-input v-model="group.name" label="Название *"></v-input>
+                        <textarea class="bordered-textarea" v-model="group.description" placeholder="Описание"></textarea>
+                    </div>
+                    <p class="subtitle">Права доступа</p>
+                    <v-tree :tree="tree" :values="treeValues"></v-tree>
+                </div>
+                <div class="col-md-6">
+                    <p class="subtitle">Список участников ({{ groupUsers.length }})</p>
+                    <v-list :data="groupUsers" :values="groupUsersValues" :clickable="true" @click="clickUser"></v-list>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var newGroupPage = new Vue({
+        el: '#new-group-page',
+        name: 'newGroupPage',
+        data: {
+            visible: false,
+            group: {},
+            groupUsers: [],
+            groupUsersValues: {
+                title: 'surname',
+                subtitle: 'login'
+            },
+            tree: [],
+            treeValues: {
+                title: 'title',
+                subtree: 'submenu',
+                type: 'type'
+            }
+        },
+        created: function () {
+            var self = this;
+            socket.on('data', function (data) {
+                if (data.name === 'getPermissionsTree') {
+                    self.tree = data.data;
+                }
+                if (data.name === 'addUsersGroup' && data.data) {
+                    self.hide();
+                    socket.emit('command', {
+                        name: 'getUsersGroups'
+                    });
+                }
+            });
+            var groupID = getParameterByName('group_id');
+            if (groupID !== null) {
+                groupID = parseInt(groupID);
+                socket.emit('command', {
+                    name: 'getUsersGroup',
+                    data: {
+                        groupID: groupID
+                    }
+                });
+            }
+        },
+        methods: {
+            show: function () {
+                this.group = {
+                    name: 'Новая группа',
+                    description: ''
+                };
+                this.visible = true;
+            },
+            hide: function () {
+                this.visible = false;
+            },
+            save: function () {
+                var self = this;
+                socket.emit('command', {
+                    name: 'addUsersGroup',
+                    data: self.group
+                });
+            },
+            clickUser: function (user) {
+                window.location.href = '/admin/users?user_id=' + user.user_id;
+            }
+        }
+    })
+</script>
+</body>

@@ -1,0 +1,37 @@
+<div id="sidebar">
+    <div id="sidebar-header">
+        <span class="page-title">Poligruz</span>
+    </div>
+    <sidebar-menu :menu="sidebar"></sidebar-menu>
+</div>
+<script>
+    Vue.component('sidebar-menu', {
+        template: '<ul class="sidebar-menu">\
+            <li v-for="item in menu" :class="checkActive(item.title)">\
+                <a :href="item.url"><i v-if="checkIcon(item.icon)" :class="getClass(item.icon)"></i><span>{{ item.title }}</span></a>\
+            </li>\
+        </ul>',
+        props: {
+            menu: Array
+        },
+        methods: {
+            getClass: function (icon) {
+                return 'mdi mdi-24px mdi-' + icon;
+            },
+            checkIcon: function (icon) {
+                return icon !== undefined || icon !== '';
+            },
+            checkActive: function (title) {
+                return title === '<%= page.title %>' ? 'active' : '';
+            }
+        }
+    });
+
+    var sidebar = new Vue({
+        el: '#sidebar',
+        name: 'sidebar',
+        data: {
+            sidebar: <%- JSON.stringify(page.sidebar) %>
+        }
+    })
+</script>

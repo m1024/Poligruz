@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <%- include('./_layouts/head') %>
+</head>
+<body>
+<%- include('./_layouts/alerts') %>
+<%- include('./_layouts/sidebar') %>
+<div class="page" id="main">
+    <%- include('./_layouts/topbar') %>
+    <div class="content" id="content">
+
+    </div>
+    <script>
+        var content = new Vue({
+            el: '#content',
+            name: 'content'
+        })
+    </script>
+</div>
+</body>

@@ -1,0 +1,27 @@
+<div id="v-fab" v-if="visible" :class="enableRightMargin ? 'right-margin' : ''">
+    <button @click="click"><i class="mdi mdi-24px mdi-plus"></i></button>
+</div>
+<script>
+    var fab = new Vue({
+        el: '#v-fab',
+        name: 'vfab',
+        data: {
+            visible: false,
+            enableRightMargin: false
+        },
+        methods: {
+            click: function () {
+                bus.$emit('fab-click');
+            },
+            show: function () {
+                this.visible = true;
+            },
+            hide: function () {
+                this.visible = false;
+            },
+            addRightMargin: function () {
+                this.enableRightMargin = true;
+            }
+        }
+    });
+</script>

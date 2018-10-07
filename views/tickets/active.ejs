@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <%- include('../_layouts/head') %>
+</head>
+<body>
+<%- include('../_layouts/alerts') %>
+<%- include('../_layouts/sidebar') %>
+<%- include('../_layouts/fab') %>
+<div class="page" id="main">
+    <%- include('../_layouts/topbar') %>
+    <div class="content" id="content">
+        <div class="content-body margin-right">
+            <div class="tickets-list">
+                <v-ticket v-for="(ticket, index) in filteredTickets" :key="index" :ticket="ticket" @click="showTicket"></v-ticket>
+            </div>
+        </div>
+        <div class="content-filter">
+            <div class="topbar white">
+                <div class="topbar-body">
+                    <p class="page-title">Фильтры</p>
+                </div>
+            </div>
+            <div class="body">
+                <div class="groupbox vertical">
+                    <vmd-input v-model="loadCityFiler" label="Город погрузки"></vmd-input>
+                    <vmd-input v-model="unloadCityFiler" label="Город выгрузки"></vmd-input>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var content = new Vue({
+            el: '#content',
+            name: 'content',
+            data: {
+                tickets: [],
+                loadCityFiler: '',
+                unloadCityFiler: ''
+            },
+            computed: {
+                filteredTickets: function () {
+                    var end_filter;
+                    var self = this;
+                    var arr = this.tickets;
+
+                    // Город погрузки
+                    if (this.loadCityFiler === '')
+                        end_filter = arr;
+                    else {
+                        arr = arr.filter(function (item) {
+                            return item['load_point_state_name'].toLowerCase().indexOf(self.loadCityFiler.toLowerCase()) > -1;
+                        });
+                    }
+
+                    // Город выгрузки
+                    if (this.unloadCityFiler === '')
+                        end_filter = arr;
+                    else {
+                        end_filter = arr.filter(function (item) {
+                            return item['unload_point_state_name'].toLowerCase().indexOf(self.unloadCityFiler.toLowerCase()) > -1;
+                        });
+                    }
+
+                    // Результат
+                    return end_filter;
+                }
+            },
+            created: function () {
+                fab.addRightMargin();
+                if (topbar.permissionCheck('addTickets'))
+                    fab.show();
+
+                var self = this;
+                socket.on('data', function (data) {
+                    if (data.name === 'getTickets')
+                        self.tickets = data.data;
+                    if (data.name === 'newTicket' && !ticketPage.visible && !newTicketPage.visible) {
+                        socket.emit('command', {name: 'getTickets'});
+                    }
+                });
+
+                socket.on('command', function (command) {
+                    if (command.name === 'newTicket' && !ticketPage.visible && !newTicketPage.visible) {
+                        socket.emit('command', {name: 'getTickets'});
+                    }
+                });
+
+                bus.$on('fab-click', function () {
+                    if (!ticketPage.visible && !newTicketPage.visible)
+                        newTicketPage.show();
+                });
+
+                socket.emit('command', {name: 'getTickets'});
+            },
+            methods: {
+                showTicket: function (ticket) {
+                    document.location.href = '/tickets/active?ticket_id=' + ticket.ticket_id;
+                }
+            }
+        });
+    </script>
+</div>
+<!-- ticketPage -->
+<div class="subpage" :class="[visible ? 'visible' : '']" id="ticket-page">
+    <div class="topbar blue">
+        <div class="topbar-body">
+            <button class="toggle" @click="hide"><i class="mdi mdi-24px mdi-arrow-left"></i></button>
+            <span class="page-title">Заявка № {{ ticket.ticket_id }}</span>
+            <span class="space stretch"></span>
+        </div>
+    </div>
+    <div class="content">
+        <div class="content-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Дата создания:</strong> {{ DateTime.fromISO(ticket.creation_datetime).setLocale('ru-RU').toLocaleString() }} {{ DateTime.fromISO(ticket.creation_datetime).setLocale('ru-RU').toLocaleString(DateTime.TIME_24_WITH_SECONDS) }}</p>
+                    <div class="groupbox">
+                        <vmd-input v-model="ticket.status_name" label="Статус" readonly></vmd-input>
+                        <button class="inline-button" v-if="rejectCheck" @click="showRejectTicketModal"><span>Отклонить</span></button>
+                        <button class="inline-button" v-if="assignCheck" @click="assignCheck"><span>Назначить</span></button>
+                        <button class="button" v-if="takeCheck" @click="takeTicket"><span>В работе</span></button>
+                        <button class="button" v-if="planCheck" @click="planTicket"><span>Запланирована</span></button>
+                        <button class="button" v-if="onWayCheck" @click="onWayTicket"><span>В пути</span></button>
+                        <button class="button" v-if="closeCheck" @click="showCloseTicketModal"><span>Закрыть</span></button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <p class="subtitle">Создатель</p>
+                    <v-item :value="creatorPerson" title="full_snp" :avatar="creatorPerson.avatar" @click="showPerson('creator')" clickable></v-item>
+                    <p class="subtitle">Логист</p>
+                    <v-item :value="logistPerson" title="full_snp" :avatar="logistPerson.avatar" @click="showPerson('logist')" clickable></v-item>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="subtitle">Погрузка</p>
+                    <v-item :value="loadOrganization" title="name"></v-item>
+                    <v-item :value="loadPoint" title="name" subtitle="full_address"></v-item>
+                    <p class="subtitle">Примечания к точке погрузки:</p>
+                    <textarea class="bordered-textarea" v-model="ticket.load_point_notes" readonly></textarea>
+                </div>
+                <div class="col-md-6">
+                    <p class="subtitle">Выгрузка</p>
+                    <v-item :value="unloadOrganization" title="name"></v-item>
+                    <v-item :value="unloadPoint" title="name" subtitle="full_address"></v-item>
+                    <p class="subtitle">Примечания к точке выгрузки:</p>
+                    <textarea class="bordered-textarea" v-model="ticket.unload_point_notes" readonly></textarea>
+                </div>
+            </div>
+            <span class="space stretch"></span>
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="subtitle">Параметры груза</p>
+                    <div class="groupbox vertical">
+                        <vmd-input v-model="ticket.weight" label="Вес*" helper="* Обязательно к заполнению" lead-icon="weight" trailing-text="кг."></vmd-input>
+                        <vmd-input v-model="ticket.volume" label="Объем" lead-icon="cube" trailing-text="куб.м."></vmd-input>
+                        <vmd-dropdown :items="loadTypes" title="load_type_name" label="Форма погрузки" v-model="loadType"></vmd-dropdown>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <p class="subtitle">Примечания</p>
+                    <div class="groupbox vertical">
+                        <textarea class="bordered-textarea" v-model="ticket.notes"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="subtitle">История заявки</p>
+                    <ticket-history :value="ticketHistory"></ticket-history>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', rejectTicketModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Отклонение заявки</span>
+                    </div>
+                    <div class="panel-body">
+                        <p class="subtitle">Причина отклонения</p>
+                        <textarea class="bordered-textarea" v-model="rejectNotes"></textarea>
+                    </div>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="rejectTicket"><span>Да</span></button>
+                        <button class="inline-button" @click="hideRejectTicketModal"><span>Нет</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', closeTicketModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Закрытие заявки</span>
+                    </div>
+                    <div class="panel-body">
+                        <vmd-input v-model="closedCost" label="Ставка" helper="Разделять копейки через ТОЧКУ!" trailing-text="руб."></vmd-input>
+                    </div>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="closeTicketModalVisible = false"><span>Отмена</span></button>
+                        <button class="inline-button" @click="closeTicket"><span>Закрыть заявку</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var ticketPage = new Vue({
+        el: '#ticket-page',
+        name: 'ticketPage',
+        data: {
+            visible: false,
+            DateTime: luxon.DateTime,
+            ticket: {},
+            loadOrganization: {},
+            loadPoint: {},
+            unloadOrganization: {},
+            unloadPoint: {},
+            loadTypes: [],
+            loadType: {},
+            creatorPerson: {},
+            logistPerson: {},
+            rejectTicketModalVisible: false,
+            rejectNotes: '',
+            ticketHistory: [],
+            closeTicketModalVisible: false,
+            closedCost: ''
+
+        },
+        computed: {
+            assignCheck: function () {
+                return this.ticket.status_id === 1 && (topbar.permissionCheck('assignOrganizationTickets') || topbar.permissionCheck('assignAllTickets'))
+            },
+            takeCheck: function () {
+                return (this.ticket.status_id === 1 || this.ticket.status_id === 3) && (topbar.permissionCheck('takeOrganizationTickets') || topbar.permissionCheck('takeAllTickets'))
+            },
+            rejectCheck: function () {
+                return this.ticket.status_id === 1 && (topbar.permissionCheck('rejectOrganizationTickets') || topbar.permissionCheck('rejectAllTickets'))
+            },
+            planCheck: function () {
+                return (this.ticket.status_id === 2 || this.ticket.status_id === 4) && (topbar.permissionCheck('takeOrganizationTickets') || topbar.permissionCheck('takeAllTickets'))
+            },
+            onWayCheck: function () {
+                return (this.ticket.status_id === 3 || this.ticket.status_id === 5) && (topbar.permissionCheck('takeOrganizationTickets') || topbar.permissionCheck('takeAllTickets'))
+            },
+            closeCheck: function () {
+                return this.ticket.status_id === 4 && (topbar.permissionCheck('takeOrganizationTickets') || topbar.permissionCheck('takeAllTickets'))
+            }
+        },
+        created: function () {
+            var self = this;
+            socket.on('data', function (data) {
+                if (data.name === 'getTicket') {
+                    self.ticket = cloneObject(data.data);
+                    self.show(self.ticket);
+                    socket.emit('command', {
+                        name: 'getOrganization',
+                        data: {
+                            organizationID: self.ticket.load_organization_id
+                        },
+                        flags: 'loadOrganization'
+                    });
+                    socket.emit('command', {
+                        name: 'getOrganization',
+                        data: {
+                            organizationID: self.ticket.unload_organization_id
+                        },
+                        flags: 'unloadOrganization'
+                    });
+                    socket.emit('command', {
+                        name: 'getPoint',
+                        data: {
+                            pointID: self.ticket.load_point_id
+                        },
+                        flags: 'loadPoint'
+                    });
+                    socket.emit('command', {
+                        name: 'getPoint',
+                        data: {
+                            pointID: self.ticket.unload_point_id
+                        },
+                        flags: 'unloadPoint'
+                    });
+                    socket.emit('command', {
+                        name: 'getPerson',
+                        data: {
+                            personID: self.ticket.creator_person_id
+                        },
+                        flags: 'ticketCreator'
+                    });
+                    if (self.ticket.logist_person_id) {
+                        socket.emit('command', {
+                            name: 'getPerson',
+                            data: {
+                                personID: self.ticket.logist_person_id
+                            },
+                            flags: 'ticketLogist'
+                        });
+                    }
+                    socket.emit('command', {
+                        name: 'getTicketHistory',
+                        data: {
+                            ticketID: self.ticket.ticket_id
+                        }
+                    });
+                }
+                if (data.name === 'getOrganization' && data.flags === 'loadOrganization')
+                    self.loadOrganization = data.data;
+                if (data.name === 'getOrganization' && data.flags === 'unloadOrganization')
+                    self.unloadOrganization = data.data;
+                if (data.name === 'getPoint' && data.flags === 'loadPoint')
+                    self.loadPoint = data.data;
+                if (data.name === 'getPoint' && data.flags === 'unloadPoint')
+                    self.unloadPoint = data.data;
+                if (data.name === 'getLoadTypes') {
+                    self.loadTypes = data.data;
+                    self.loadType = self.loadTypes.filter(function (item) {
+                        return item.load_type_id === self.ticket.load_type_id;
+                    })[0];
+                }
+                if (data.name === 'getPerson' && data.flags === 'ticketCreator')
+                    self.creatorPerson = data.data;
+                if (data.name === 'getPerson' && data.flags === 'ticketLogist')
+                    self.logistPerson = data.data;
+                if (data.name === 'getTicketHistory')
+                    self.ticketHistory = data.data;
+            });
+
+            var ticketID = getParameterByName('ticket_id');
+            if (ticketID !== null) {
+                ticketID = parseInt(ticketID);
+                socket.emit('command', {
+                    name: 'getTicket',
+                    data: {
+                        ticketID: ticketID
+                    }
+                });
+            }
+
+            socket.emit('command', {name: 'getLoadTypes'});
+        },
+        methods: {
+            show: function (ticket) {
+                this.ticket = ticket;
+                this.visible = true;
+                fab.hide();
+            },
+            hide: function () {
+                window.history.go(-1);
+                fab.show();
+            },
+            showPerson: function (person) {
+                if (person === 'creator')
+                    window.location.href = '/catalog/persons?person_id=' + this.creatorPerson.person_id;
+                if (person === 'logist')
+                    window.location.href = '/catalog/persons?person_id=' + this.logistPerson.person_id;
+            },
+            showRejectTicketModal: function () {
+                this.rejectTicketModalVisible = true;
+            },
+            hideRejectTicketModal: function () {
+                this.rejectTicketModalVisible = false;
+            },
+            showCloseTicketModal: function () {
+                this.closedCost = '';
+                this.closeTicketModalVisible = true;
+            },
+            hideCloseTicketModal: function () {
+                this.closeTicketModalVisible = false;
+            },
+            rejectTicket: function () {
+                this.hideRejectTicketModal();
+                var self = this;
+                socket.emit('command', {
+                    name: 'rejectTicket',
+                    data: {
+                        ticketID: self.ticket.ticket_id,
+                        description: self.rejectNotes
+                    }
+                });
+            },
+            takeTicket: function () {
+                var self = this;
+                socket.emit('command', {
+                    name: 'takeTicket',
+                    data: {
+                        ticketID: self.ticket.ticket_id
+                    }
+                });
+                this.hide();
+            },
+            planTicket: function () {
+                var self = this;
+                socket.emit('command', {
+                    name: 'planTicket',
+                    data: {
+                        ticketID: self.ticket.ticket_id
+                    }
+                });
+                this.hide();
+            },
+            onWayTicket: function () {
+                var self = this;
+                socket.emit('command', {
+                    name: 'onWayTicket',
+                    data: {
+                        ticketID: self.ticket.ticket_id
+                    }
+                });
+                this.hide();
+            },
+
+            closeTicket: function () {
+                var self = this;
+                socket.emit('command', {
+                    name: 'closeTicket',
+                    data: {
+                        ticket_id: self.ticket.ticket_id,
+                        closed_cost: parseFloat(self.closedCost)
+                    }
+                });
+                this.hide();
+            }
+        }
+    });
+</script>
+<!-- newTicketPage -->
+<div class="subpage" :class="[visible ? 'visible' : '']" id="new-ticket-page">
+    <div class="topbar teal">
+        <div class="topbar-body">
+            <button class="toggle" @click="hide"><i class="mdi mdi-24px mdi-close"></i></button>
+            <span class="page-title">Новая заявка</span>
+            <span class="space stretch"></span>
+            <button class="toggle" v-if="canSave" @click="save"><i class="mdi mdi-24px mdi-check"></i></button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="content-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="subtitle">Погрузка</p>
+                    <v-item :value="loadOrganization" title="name"></v-item>
+                    <div class="groupbox align-right">
+                        <button class="button" @click="showLinkLoadOrganizationModal"><span>Выбрать организацию</span></button>
+                    </div>
+                    <v-item :value="loadPoint" title="name" subtitle="full_address"></v-item>
+                    <div class="groupbox align-right">
+                        <button class="button" @click="showLinkLoadPointModal" :disabled="!loadOrganization.organization_id"><span>Выбрать точку</span></button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <p class="subtitle">Выгрузка</p>
+                    <v-item :value="unloadOrganization" title="name"></v-item>
+                    <div class="groupbox align-right">
+                        <button class="button" @click="showLinkUnloadOrganizationModal"><span>Выбрать организацию</span></button>
+                    </div>
+                    <v-item :value="unloadPoint" title="name" subtitle="full_address"></v-item>
+                    <div class="groupbox align-right">
+                        <button class="button" @click="showLinkUnloadPointModal" :disabled="!unloadOrganization.organization_id"><span>Выбрать точку</span></button>
+                    </div>
+                </div>
+            </div>
+            <span class="space stretch"></span>
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="subtitle">Параметры груза</p>
+                    <div class="groupbox vertical">
+                        <vmd-input v-model="ticket.weight" label="Вес*" helper="* Обязательно к заполнению" lead-icon="weight" trailing-text="кг."></vmd-input>
+                        <vmd-input v-model="ticket.volume" label="Объем*" lead-icon="cube" helper="* Обязательно к заполнению" trailing-text="куб.м."></vmd-input>
+                        <vmd-dropdown :items="loadTypes" title="load_type_name" label="Форма погрузки" v-model="loadType"></vmd-dropdown>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <p class="subtitle">Примечания</p>
+                    <div class="groupbox vertical">
+                        <textarea class="bordered-textarea" v-model="ticket.notes"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', linkLoadOrganizationModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Выбор организации</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="groupbox vertical">
+                            <vmd-input type="text" label="Поиск" v-model="linkOrganizationFilter" lead-icon="magnify"></vmd-input>
+                        </div>
+                    </div>
+                    <v-list class="overflow" :value="organizations" title="name" :clickable="true" @click="linkLoadOrganization" :filter="linkOrganizationFilter"></v-list>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="hideLinkLoadOrganizationModal"><span>Отмена</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', linkUnloadOrganizationModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Выбор организации</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="groupbox vertical">
+                            <vmd-input type="text" label="Поиск" v-model="linkOrganizationFilter" lead-icon="magnify"></vmd-input>
+                        </div>
+                    </div>
+                    <v-list class="overflow" :value="organizations" title="name" :clickable="true" @click="linkUnloadOrganization" :filter="linkOrganizationFilter"></v-list>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="hideLinkUnloadOrganizationModal"><span>Отмена</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', linkLoadPointModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Выбор точки</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="groupbox vertical">
+                            <vmd-input type="text" label="Поиск" v-model="linkPointFilter" lead-icon="magnify"></vmd-input>
+                        </div>
+                    </div>
+                    <v-list class="overflow" :value="loadPoints" title="name" subtitle="full_address" :clickable="true" @click="linkLoadPoint" :filter="linkPointFilter"></v-list>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="hideLinkLoadPointModal"><span>Отмена</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', linkUnloadPointModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Выбор точки</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="groupbox vertical">
+                            <vmd-input type="text" label="Поиск" v-model="linkPointFilter" lead-icon="magnify"></vmd-input>
+                        </div>
+                    </div>
+                    <v-list class="overflow" :value="unloadPoints" title="name" subtitle="full_address" :clickable="true" @click="linkUnloadPoint" :filter="linkPointFilter"></v-list>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="hideLinkUnloadPointModal"><span>Отмена</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var newTicketPage = new Vue({
+        el: '#new-ticket-page',
+        name: 'newTicketPage',
+        data: {
+            visible: false,
+            ticket: {
+                volume: '',
+                notes: ''
+            },
+            loadTypes: [],
+            loadType: {},
+            loadOrganization: {},
+            loadPoint: {},
+            unloadOrganization: {},
+            unloadPoint: {},
+            organizations: [],
+            loadPoints: [],
+            unloadPoints: [],
+            linkLoadOrganizationModalVisible: false,
+            linkUnloadOrganizationModalVisible: false,
+            linkOrganizationFilter: '',
+            linkLoadPointModalVisible: false,
+            linkUnloadPointModalVisible: false,
+            linkPointFilter: '',
+            tmp: ''
+        },
+        computed: {
+            canSave: function () {
+                var isNumbers = parseInt(this.ticket.weight) && (parseFloat(this.ticket.volume) || this.ticket.volume === '');
+                var isLoad = this.loadOrganization.organization_id > 0 && this.loadPoint.point_id > 0;
+                var isUnload = this.unloadOrganization.organization_id > 0 && this.unloadPoint.point_id > 0;
+                return isNumbers && isLoad && isUnload && this.loadType.load_type_id;
+            }
+        },
+        created: function () {
+            var self = this;
+            socket.on('data', function (data) {
+                if (data.name === 'getOrganizations') {
+                    self.organizations = data.data;
+                }
+                if (data.name === 'getLoadTypes') {
+                    self.loadTypes = data.data;
+                }
+                if (data.name === 'getOrganizationPoints') {
+                    if (self.tmp === 'load')
+                        self.loadPoints = data.data;
+                    if (self.tmp === 'unload')
+                        self.unloadPoints = data.data;
+                }
+                if (data.name === 'addTicket' && data.data) {
+                    self.hide();
+                    socket.emit('command', {name: 'getTickets'});
+                }
+            });
+
+            socket.emit('command', {name: 'getOrganizations'});
+        },
+        methods: {
+            show: function () {
+                socket.emit('command', {name: 'getLoadTypes'});
+
+                this.ticket = {
+                    volume: '',
+                    notes: ''
+                };
+                this.loadOrganization = {};
+                this.unloadOrganization = {};
+                this.loadPoint = {};
+                this.unloadPoint = {};
+                this.loadType = {};
+                this.visible = true;
+                fab.hide();
+            },
+            hide: function () {
+                this.visible = false;
+                fab.show();
+            },
+            save: function () {
+                this.ticket.load_organization_id = this.loadOrganization.organization_id;
+                this.ticket.unload_organization_id = this.unloadOrganization.organization_id;
+                this.ticket.load_point_id = this.loadPoint.point_id;
+                this.ticket.unload_point_id = this.unloadPoint.point_id;
+                this.ticket.load_type_id = this.loadType.load_type_id;
+                console.log(this.ticket);
+                var self = this;
+                socket.emit('command', {
+                    name: 'addTicket',
+                    data: self.ticket
+                });
+            },
+            showLinkLoadOrganizationModal: function () {
+                this.linkOrganizationFilter = '';
+                this.linkLoadOrganizationModalVisible = true;
+            },
+            hideLinkLoadOrganizationModal: function () {
+                this.linkLoadOrganizationModalVisible = false;
+            },
+            linkLoadOrganization: function (organization) {
+                this.loadOrganization = organization;
+                this.loadPoint = {};
+                this.hideLinkLoadOrganizationModal();
+            },
+            showLinkUnloadOrganizationModal: function () {
+                this.linkOrganizationFilter = '';
+                this.linkUnloadOrganizationModalVisible = true;
+            },
+            hideLinkUnloadOrganizationModal: function () {
+                this.linkUnloadOrganizationModalVisible = false;
+            },
+            linkUnloadOrganization: function (organization) {
+                this.unloadOrganization = organization;
+                this.unloadPoint = {};
+                this.hideLinkUnloadOrganizationModal();
+            },
+            showLinkLoadPointModal: function () {
+                var self = this;
+                this.tmp = 'load';
+                socket.emit('command', {
+                    name: 'getOrganizationPoints',
+                    data: {
+                        organizationID: self.loadOrganization.organization_id
+                    }
+                });
+                this.linkLoadPointModalVisible = true;
+            },
+            hideLinkLoadPointModal: function () {
+                this.tmp = '';
+                this.linkLoadPointModalVisible = false;
+            },
+            linkLoadPoint: function (point) {
+                this.loadPoint = point;
+                this.hideLinkLoadPointModal();
+            },
+            showLinkUnloadPointModal: function () {
+                var self = this;
+                this.tmp = 'unload';
+                socket.emit('command', {
+                    name: 'getOrganizationPoints',
+                    data: {
+                        organizationID: self.unloadOrganization.organization_id
+                    }
+                });
+                this.linkUnloadPointModalVisible = true;
+            },
+            hideLinkUnloadPointModal: function () {
+                this.tmp = '';
+                this.linkUnloadPointModalVisible = false;
+            },
+            linkUnloadPoint: function (point) {
+                this.unloadPoint = point;
+                this.hideLinkUnloadPointModal();
+            }
+        }
+    });
+</script>
+</body>

@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <%- include('../_layouts/head') %>
+</head>
+<body>
+<%- include('../_layouts/alerts') %>
+<%- include('../_layouts/sidebar') %>
+<%- include('../_layouts/fab') %>
+<div class="page" id="main">
+    <%- include('../_layouts/topbar') %>
+    <div class="content" id="content">
+        <div class="content-body">
+            <div class="groupbox">
+                <vmd-input v-model="organizationFilter" label="Поиск" placeholder="Название организации"></vmd-input>
+            </div>
+            <div class="panel">
+                <v-list :value="organizations" keys="organization_id" title="name" :clickable="true" @click="showOrganization" :filter="organizationFilter"></v-list>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        var content = new Vue({
+            el: '#content',
+            name: 'content',
+            data: {
+                organizations: [],
+                organizationFilter: ''
+            },
+            created: function () {
+                var self = this;
+                socket.on('data', function (data) {
+                    if (data.name === 'getOrganizations')
+                        self.organizations = data.data;
+                });
+
+                bus.$on('fab-click', function () {
+                    if (!organizationPage.visible && !newOrganizationPage.visible)
+                        newOrganizationPage.show();
+                });
+
+                if (topbar.permissionCheck('manageOrganizations'))
+                    fab.show();
+
+                socket.emit('command', {name: 'getOrganizations'});
+            },
+            methods: {
+                showOrganization: function (organization) {
+                    document.location.href = '/catalog/organizations?organization_id=' + organization.organization_id;
+                }
+            }
+        })
+    </script>
+</div>
+<!-- organizationPage -->
+<div class="subpage" :class="[visible ? 'visible' : '']" id="organization-page">
+    <div class="topbar blue">
+        <div class="topbar-body">
+            <button class="toggle" @click="hide"><i class="mdi mdi-24px mdi-arrow-left"></i></button>
+            <span class="page-title">{{ organization.name }}</span>
+            <span class="space stretch"></span>
+            <button class="toggle" :disabled="cantEdit"><i :class="'mdi mdi-24px mdi-' + editIcon" @click="tryEdit"></i></button>
+            <button class="toggle"><i class="mdi mdi-24px mdi-delete" @click="showDelModal"></i></button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="content-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="subtitle">Основные параметры</p>
+                    <div class="groupbox vertical">
+                        <vmd-input v-model="organization.name" label="Краткое название *" :readonly="readOnly"></vmd-input>
+                        <textarea class="bordered-textarea" v-model="organization.full_name" placeholder="Полное название" :readonly="readOnly"></textarea>
+                    </div>
+                    <p class="subtitle">Точки организации ({{ organizationPoints.length }})</p>
+                    <v-list :value="organizationPoints" keys="point_id" title="name" subtitle="full_address" :clickable="true" @click="showOrganizationPoint"></v-list>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', delModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Удалить группу</span>
+                    </div>
+                    <div class="panel-body">
+                        <p>Вы действительно хотите удалить организацию {{ organization.name }}?</p>
+                        <p><strong>Внимание:</strong> Вместе с организацией удаляются и все ее точки!</p>
+                    </div>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="delOrganization"><span>Да</span></button>
+                        <button class="inline-button" @click="hideDelModal"><span>Нет</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var organizationPage = new Vue({
+        el: '#organization-page',
+        name: 'organizationPage',
+        data: {
+            visible: false,
+            readOnly: true,
+            editIcon: 'pencil',
+            organization: {
+                name: '',
+                full_name: ''
+            },
+            organizationPoints: [],
+            delModalVisible: false
+        },
+        computed: {
+            cantEdit: function () {
+                return !topbar.permissionCheck('manageOrganizations');
+            }
+        },
+        created: function () {
+            var self = this;
+            socket.on('data', function (data) {
+                if (data.name === 'getOrganization')
+                    self.show(cloneObject(data.data));
+                if (data.name === 'getOrganizationPoints')
+                    self.organizationPoints = data.data;
+                if (data.name === 'updateOrganization') {
+                    self.editIcon = 'pencil';
+                    self.readOnly = true;
+                }
+            });
+
+            var organizationID = getParameterByName('organization_id');
+            if (organizationID !== null) {
+                organizationID = parseInt(organizationID);
+                socket.emit('command', {
+                    name: 'getOrganization',
+                    data: {
+                        organizationID: organizationID
+                    }
+                });
+            }
+        },
+        methods: {
+            show: function (organization) {
+                this.organization = cloneObject(organization);
+                this.visible = true;
+                fab.hide();
+
+                var self = this;
+                socket.emit('command', {
+                    name: 'getOrganizationPoints',
+                    data: {
+                        organizationID: self.organization.organization_id
+                    }
+                })
+            },
+            hide: function () {
+                this.visible = false;
+                history.go(-1);
+                fab.show();
+            },
+            showDelModal: function () {
+                this.delModalVisible = true;
+            },
+            hideDelModal: function () {
+                this.delModalVisible = false;
+            },
+            delOrganization: function () {
+                var self = this;
+                socket.emit('command', {
+                    name: 'delOrganization',
+                    data: {
+                        organizationID: self.organization.organization_id
+                    }
+                });
+                this.delModalVisible = false;
+            },
+            showOrganizationPoint: function (point) {
+                document.location.href = '/catalog/points?point_id=' + point.point_id;
+            },
+
+            tryEdit: function () {
+                if (this.editIcon === 'pencil') {
+                    this.readOnly = false;
+                    this.editIcon = 'content-save';
+                }
+                else {
+                    if (this.editIcon === 'content-save') {
+                        socket.emit('command', {
+                            name: 'updateOrganization',
+                            data: this.organization
+                        });
+                    }
+                }
+            }
+        }
+    })
+</script>
+<!-- newOrganizationPage -->
+<div class="subpage" :class="[visible ? 'visible' : '']" id="new-organization-page">
+    <div class="topbar teal">
+        <div class="topbar-body">
+            <button class="toggle" @click="hide"><i class="mdi mdi-24px mdi-close"></i></button>
+            <span class="page-title">{{ organization.name }}</span>
+            <span class="space stretch"></span>
+            <button class="toggle" @click="save" v-if="canSave"><i class="mdi mdi-24px mdi-check"></i></button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="content-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="subtitle">Основные параметры</p>
+                    <div class="groupbox vertical">
+                        <v-input v-model="organization.name" label="Краткое название *"></v-input>
+                        <textarea class="bordered-textarea" v-model="organization.full_name" placeholder="Полное название"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var newOrganizationPage = new Vue({
+        el: '#new-organization-page',
+        name: 'newOrganizationPage',
+        data: {
+            visible: false,
+            organization: {
+                name: '',
+                full_name: ''
+            }
+        },
+        computed: {
+            canSave: function () {
+                return this.organization.name.trim() !== '';
+            }
+        },
+        created: function () {
+            var self = this;
+            socket.on('data', function (data) {
+                if (data.name === 'addOrganization' && data.data === true) {
+                    self.hide();
+                    socket.emit('command', {name: 'getOrganizations'});
+                }
+            });
+        },
+        methods: {
+            show: function () {
+                this.organization = {
+                    name: '',
+                    full_name: ''
+                }
+                this.visible = true;
+                fab.hide();
+            },
+            hide: function () {
+                this.visible = false;
+                fab.show();
+            },
+            save: function () {
+                var self = this;
+                socket.emit('command', {
+                    name: 'addOrganization',
+                    data: {
+                        name: self.organization.name,
+                        full_name: self.organization.full_name
+                    }
+                });
+            }
+        }
+    });
+</script>
+</body>

@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <%- include('../_layouts/head') %>
+</head>
+<body>
+<%- include('../_layouts/alerts') %>
+<%- include('../_layouts/sidebar') %>
+<div class="page" id="main">
+    <%- include('../_layouts/topbar') %>
+    <div class="content" id="content">
+        <div class="content-body margin-right">
+            <div class="tickets-list">
+                <v-ticket v-for="(ticket, index) in filteredTickets" :key="index" :ticket="ticket" @click="showTicket"></v-ticket>
+            </div>
+        </div>
+        <div class="content-filter">
+            <div class="topbar white">
+                <div class="topbar-body">
+                    <p class="page-title">Фильтры</p>
+                </div>
+            </div>
+            <div class="body">
+                <div class="groupbox vertical">
+                    <vmd-input v-model="loadCityFiler" label="Город погрузки"></vmd-input>
+                    <vmd-input v-model="unloadCityFiler" label="Город выгрузки"></vmd-input>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var content = new Vue({
+            el: '#content',
+            name: 'content',
+            data: {
+                tickets: [],
+                loadCityFiler: '',
+                unloadCityFiler: ''
+            },
+            computed: {
+                filteredTickets: function () {
+                    if (this.loadCityFiler === '')
+                        return this.tickets;
+                    else {
+                        var self = this;
+                        return this.tickets.filter(function (item) {
+                            return item['load_point_locality_name'].toLowerCase().indexOf(self.loadCityFiler.toLowerCase()) > -1;
+                        });
+                    }
+                }
+            },
+            created: function () {
+                var self = this;
+                socket.on('data', function (data) {
+                    if (data.name === 'getAchiveTickets')
+                        self.tickets = data.data;
+                });
+
+                socket.emit('command', {name: 'getAchiveTickets'});
+            },
+            methods: {
+                showTicket: function (ticket) {
+                    document.location.href = '/tickets/archive?ticket_id=' + ticket.ticket_id;
+                }
+            }
+        })
+    </script>
+</div>
+<div class="subpage" :class="[visible ? 'visible' : '']" id="ticket-page">
+    <div class="topbar blue">
+        <div class="topbar-body">
+            <button class="toggle" @click="hide"><i class="mdi mdi-24px mdi-arrow-left"></i></button>
+            <span class="page-title">Заявка № {{ ticket.ticket_id }}</span>
+            <span class="space stretch"></span>
+        </div>
+    </div>
+    <div class="content">
+        <div class="content-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Дата создания:</strong> {{ DateTime.fromISO(ticket.creation_datetime).setLocale('ru-RU').toLocaleString() }} {{ DateTime.fromISO(ticket.creation_datetime).setLocale('ru-RU').toLocaleString(DateTime.TIME_24_WITH_SECONDS) }}</p>
+                    <div class="groupbox">
+                        <vmd-input v-model="ticket.status_name" label="Статус" readonly></vmd-input>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <p class="subtitle">Создатель</p>
+                    <v-item :value="creatorPerson" title="full_snp" :avatar="creatorPerson.avatar" @click="showPerson('creator')" clickable></v-item>
+                    <p class="subtitle">Логист</p>
+                    <v-item :value="logistPerson" title="full_snp" :avatar="logistPerson.avatar" @click="showPerson('logist')" clickable></v-item>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="subtitle">Погрузка</p>
+                    <v-item :value="loadOrganization" title="name"></v-item>
+                    <v-item :value="loadPoint" title="name" subtitle="full_address"></v-item>
+                </div>
+                <div class="col-md-6">
+                    <p class="subtitle">Выгрузка</p>
+                    <v-item :value="unloadOrganization" title="name"></v-item>
+                    <v-item :value="unloadPoint" title="name" subtitle="full_address"></v-item>
+                </div>
+            </div>
+            <span class="space stretch"></span>
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="subtitle">Параметры груза</p>
+                    <div class="groupbox vertical">
+                        <vmd-input v-model="ticket.weight" label="Вес*" helper="* Обязательно к заполнению" lead-icon="weight" trailing-text="кг."></vmd-input>
+                        <vmd-input v-model="ticket.volume" label="Объем" lead-icon="cube" trailing-text="куб.м."></vmd-input>
+                        <vmd-dropdown :items="loadTypes" title="load_type_name" label="Форма погрузки" v-model="loadType"></vmd-dropdown>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <p class="subtitle">Примечания</p>
+                    <div class="groupbox vertical">
+                        <textarea class="bordered-textarea" v-model="ticket.notes"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="subtitle">История заявки</p>
+                    <ticket-history :value="ticketHistory"></ticket-history>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var ticketPage = new Vue({
+        el: '#ticket-page',
+        name: 'ticketPage',
+        data: {
+            visible: false,
+            DateTime: luxon.DateTime,
+            ticket: {},
+            loadOrganization: {},
+            loadPoint: {},
+            unloadOrganization: {},
+            unloadPoint: {},
+            loadTypes: [],
+            loadType: {},
+            creatorPerson: {},
+            logistPerson: {},
+            ticketHistory: []
+        },
+        created: function () {
+            var self = this;
+            socket.on('data', function (data) {
+                if (data.name === 'getTicket') {
+                    self.ticket = cloneObject(data.data);
+                    self.show(self.ticket);
+                    socket.emit('command', {
+                        name: 'getOrganization',
+                        data: {
+                            organizationID: self.ticket.load_organization_id
+                        },
+                        flags: 'loadOrganization'
+                    });
+                    socket.emit('command', {
+                        name: 'getOrganization',
+                        data: {
+                            organizationID: self.ticket.unload_organization_id
+                        },
+                        flags: 'unloadOrganization'
+                    });
+                    socket.emit('command', {
+                        name: 'getPoint',
+                        data: {
+                            pointID: self.ticket.load_point_id
+                        },
+                        flags: 'loadPoint'
+                    });
+                    socket.emit('command', {
+                        name: 'getPoint',
+                        data: {
+                            pointID: self.ticket.unload_point_id
+                        },
+                        flags: 'unloadPoint'
+                    });
+                    socket.emit('command', {
+                        name: 'getPerson',
+                        data: {
+                            personID: self.ticket.creator_person_id
+                        },
+                        flags: 'ticketCreator'
+                    });
+                    if (self.ticket.logist_person_id) {
+                        socket.emit('command', {
+                            name: 'getPerson',
+                            data: {
+                                personID: self.ticket.logist_person_id
+                            },
+                            flags: 'ticketLogist'
+                        });
+                    }
+                    socket.emit('command', {
+                        name: 'getTicketHistory',
+                        data: {
+                            ticketID: self.ticket.ticket_id
+                        }
+                    });
+                }
+                if (data.name === 'getOrganization' && data.flags === 'loadOrganization')
+                    self.loadOrganization = data.data;
+                if (data.name === 'getOrganization' && data.flags === 'unloadOrganization')
+                    self.unloadOrganization = data.data;
+                if (data.name === 'getPoint' && data.flags === 'loadPoint')
+                    self.loadPoint = data.data;
+                if (data.name === 'getPoint' && data.flags === 'unloadPoint')
+                    self.unloadPoint = data.data;
+                if (data.name === 'getLoadTypes') {
+                    self.loadTypes = data.data;
+                    self.loadType = self.loadTypes.filter(function (item) {
+                        return item.load_type_id === self.ticket.load_type_id;
+                    })[0];
+                }
+                if (data.name === 'getPerson' && data.flags === 'ticketCreator')
+                    self.creatorPerson = data.data;
+                if (data.name === 'getPerson' && data.flags === 'ticketLogist')
+                    self.logistPerson = data.data;
+                if (data.name === 'getTicketHistory')
+                    self.ticketHistory = data.data;
+            });
+
+            var ticketID = getParameterByName('ticket_id');
+            if (ticketID !== null) {
+                ticketID = parseInt(ticketID);
+                socket.emit('command', {
+                    name: 'getTicket',
+                    data: {
+                        ticketID: ticketID
+                    }
+                });
+            }
+
+            socket.emit('command', {name: 'getLoadTypes'});
+        },
+        methods: {
+            show: function (ticket) {
+                this.ticket = ticket;
+                this.visible = true;
+            },
+            hide: function () {
+                window.history.go(-1);
+            }
+        }
+    });
+</script>
+</body>

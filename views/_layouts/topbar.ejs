@@ -1,0 +1,80 @@
+<div id="topbar" class="topbar">
+    <div class="topbar-body">
+        <!-- <button class="toggle"><i class="mdi mdi-24px mdi-menu"></i></button> -->
+        <span class="page-title"><%= page.title %></span>
+        <span class="space stretch"></span>
+        <!-- <button class="toggle"><i class="mdi mdi-24px mdi-forum"></i></button> -->
+        <avatar-button :avatar="user.person.avatar"></avatar-button>
+    </div>
+    <pagebar :menu="pagebar"></pagebar>
+</div>
+<script>
+    Vue.component('avatar-button', {
+        template: '<div class="account" v-click-outside="close">\
+            <button class="toggle" @click="toggleClick"><img class="avatar" :src="avatar"></button>\
+            <div :class="[\'panel\', opened ? \'opened\' : \'\']">\
+                <div class="panel-footer">\
+                    <button class="inline-button" @click="logout"><i class="mdi mdi-24px mdi-logout"></i><span>Выйти</span></button>\
+                </div>\
+            </div>\
+        </div>',
+        props: {
+            avatar: String
+        },
+        data: function () {
+            return {
+                opened: false
+            }
+        },
+        methods: {
+            toggleClick: function () {
+                this.opened = !this.opened;
+            },
+            close: function () {
+                this.opened = false;
+            },
+            logout: function () {
+                socket.emit('command', {
+                    name: 'logout'
+                });
+            }
+        }
+    });
+
+    Vue.component('pagebar', {
+        template: '<div class="pagebar" v-if="menu.length > 0">\
+            <ul :class="stretch">\
+                <li v-for="item in menu" :class="checkActive(item.url)"><a :href="item.url">{{ item.title }}</a></li>\
+            </ul>\
+        </div>',
+        props: {
+            menu: Array
+        },
+        computed: {
+            stretch: function () {
+                return this.menu.length < 4 ? 'stretch' : '';
+            }
+        },
+        methods: {
+            checkActive: function (url) {
+                return url === window.location.pathname ? 'active' : '';
+            }
+        }
+    });
+
+    var topbar = new Vue({
+        el: '#topbar',
+        name: 'topbar',
+        data: {
+            pagebar: <%- JSON.stringify(page.pagebar) %>,
+            user: <%- JSON.stringify(user) %>
+        },
+        methods: {
+            permissionCheck: function (name) {
+                return this.user.permissions.filter(function (value) {
+                    return value.name === name;
+                }).length > 0;
+            }
+        }
+    })
+</script>

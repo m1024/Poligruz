@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <%- include('../_layouts/head') %>
+</head>
+<body>
+<%- include('../_layouts/alerts') %>
+<%- include('../_layouts/sidebar') %>
+<%- include('../_layouts/fab') %>
+<div class="page" id="main">
+    <%- include('../_layouts/topbar') %>
+    <div class="content" id="content">
+        <div class="content-body">
+            <div class="panel">
+                <v-list :value="points" keys="point_id" title="name" subtitle="full_address" :clickable="true" @click="showPoint"></v-list>
+            </div>
+        </div>
+    </div>
+    <script>
+        var content = new Vue({
+            el: '#content',
+            name: 'content',
+            data: {
+                points: []
+            },
+            created: function () {
+                var self = this;
+                socket.on('data', function (data) {
+                    if (data.name === 'getPoints')
+                        self.points = data.data;
+                });
+
+                bus.$on('fab-click', function () {
+                    if (!pointPage.visible && !newPointPage.visible)
+                        newPointPage.show();
+                });
+
+                if (topbar.permissionCheck('managePoints'))
+                    fab.show();
+
+                socket.emit('command', {name: 'getPoints'});
+            },
+            methods: {
+                showPoint: function (point) {
+                    document.location.href = '/catalog/points?point_id=' + point.point_id;
+                }
+            }
+        })
+    </script>
+</div>
+<!-- pointPage -->
+<div class="subpage" :class="[visible ? 'visible' : '']" id="point-page">
+    <div class="topbar blue">
+        <div class="topbar-body">
+            <button class="toggle" @click="hide"><i class="mdi mdi-24px mdi-arrow-left"></i></button>
+            <span class="page-title">{{ point.name }}</span>
+            <span class="space stretch"></span>
+            <button class="toggle" :disabled="cantEdit"><i :class="'mdi mdi-24px mdi-' + editIcon" @click="tryEdit"></i></button>
+            <button class="toggle" @click="showDelModal"><i class="mdi mdi-24px mdi-delete"></i></button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="content-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="subtitle">Основные параметры</p>
+                    <div class="groupbox vertical">
+                        <vmd-input v-model="point.name" label="Название*" helper="*Обязательно" :readonly="readOnly"></vmd-input>
+                    </div>
+                    <p class="subtitle">Адрес</p>
+                    <div class="groupbox vertical">
+                        <vmd-dropdown :items="states" title="state_name" label="Субъект РФ*" v-model="selectedState" :readonly="readOnly"></vmd-dropdown>
+                        <div class="groupbox">
+                            <vmd-dropdown :items="localities" title="locality_type" label="Тип населенного пункта*" v-model="selectedLocality" :readonly="readOnly"></vmd-dropdown>
+                            <vmd-input v-model="point.locality_name" label="Название нас. пункта*" :readonly="readOnly"></vmd-input>
+                        </div>
+                        <vmd-input v-model="point.address" label="Адрес*" :readonly="readOnly"></vmd-input>
+                        <p class="subtitle">Контрагент - владелец точки</p>
+                        <v-item :value="point" title="name"></v-item>
+                        <div class="groupbox align-right" v-if="point.organization_id">
+                            <button class="button" ><span>Сменить владельца</span></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <p class="subtitle">Примечания</p>
+                    <div class="groupbox vertical">
+                        <textarea class="bordered-textarea" v-model="point.notes" placeholder="Примечания" :readonly="readOnly"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', delModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Удалить точку</span>
+                    </div>
+                    <div class="panel-body">
+                        <p>Вы действительно хотите удалить точку "{{ point.name }}"?</p>
+                    </div>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="delPoint"><span>Да</span></button>
+                        <button class="inline-button" @click="hideDelModal"><span>Нет</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var pointPage = new Vue({
+        el: '#point-page',
+        name: 'pointPage',
+        data: {
+            visible: false,
+            readOnly: true,
+            editIcon: 'pencil',
+            point: {},
+            states: [],
+            selectedState: {},
+            localities: [],
+            selectedLocality: {},
+            delModalVisible: false
+        },
+        computed: {
+            cantEdit: function () {
+                return !topbar.permissionCheck('managePoints');
+            }
+        },
+        created: function () {
+            var self = this;
+            socket.on('data', function (data) {
+                if (data.name === 'getPoint')
+                    self.show(cloneObject(data.data));
+                if (data.name === 'getStates') {
+                    self.states = data.data;
+                    self.selectedState = self.states.filter(function (value) {
+                        return value.state_id === self.point.state_id;
+                    })[0];
+                }
+                if (data.name === 'getLocalities') {
+                    self.localities = data.data;
+                    self.selectedLocality = self.localities.filter(function (value) {
+                        return value.locality_id === self.point.locality_id;
+                    })[0];
+                }
+                if (data.name === 'delPoint') {
+                    self.hide();
+                    socket.emit('command', {name: 'getUsersGroups'});
+                }
+            });
+
+            var pointID = getParameterByName('point_id');
+            if (pointID !== null) {
+                pointID = parseInt(pointID);
+                socket.emit('command', {
+                    name: 'getPoint',
+                    data: {
+                        pointID: pointID
+                    }
+                });
+            }
+        },
+        methods: {
+            show: function (point) {
+                this.point = point;
+                socket.emit('command', {name: 'getStates'});
+                socket.emit('command', {name: 'getLocalities'});
+                this.visible = true;
+                fab.hide();
+            },
+            hide: function () {
+                window.history.go(-1);
+                fab.show();
+            },
+            showDelModal: function () {
+                this.delModalVisible = true;
+            },
+            hideDelModal: function () {
+                this.delModalVisible = false;
+            },
+            delPoint: function () {
+                var self = this;
+                socket.emit('command', {
+                    name: 'delPoint',
+                    data: {
+                        pointID: self.point.point_id
+                    }
+                })
+            },
+
+            tryEdit: function () {
+                if (this.editIcon === 'pencil') {
+                    this.readOnly = false;
+                    this.editIcon = 'content-save';
+                }
+                else {
+                    if (this.editIcon === 'content-save') {
+                        socket.emit('command', {
+                            name: 'updatePoint',
+                            data: {
+                                point_id: this.point.point_id,
+                                name: this.point.name,
+                                state_id: this.selectedState.state_id,
+                                locality_id: this.selectedLocality.locality_id,
+                                locality_name: this.point.locality_name,
+                                address: this.point.address,
+                                notes: this.point.notes
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    });
+</script>
+<!-- newPointPage -->
+<div class="subpage" :class="[visible ? 'visible' : '']" id="new-point-page">
+    <div class="topbar teal">
+        <div class="topbar-body">
+            <button class="toggle" @click="hide"><i class="mdi mdi-24px mdi-close"></i></button>
+            <span class="page-title">{{ point.name }}</span>
+            <span class="space stretch"></span>
+            <button class="toggle" @click="save" v-if="canSave"><i class="mdi mdi-24px mdi-check"></i></button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="content-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="subtitle">Основные параметры</p>
+                    <div class="groupbox vertical">
+                        <vmd-input v-model="point.name" label="Название*" helper="*Обязательно"></vmd-input>
+                    </div>
+                    <p class="subtitle">Адрес</p>
+                    <div class="groupbox vertical">
+                        <vmd-dropdown :items="states" title="state_name" label="Субъект РФ*" v-model="selectedState"></vmd-dropdown>
+                        <div class="groupbox">
+                            <vmd-dropdown :items="localities" title="locality_type" label="Тип населенного пункта*" v-model="selectedLocality"></vmd-dropdown>
+                            <vmd-input v-model="point.locality_name" label="Название нас. пункта*"></vmd-input>
+                        </div>
+                        <vmd-input v-model="point.address" label="Адрес*"></vmd-input>
+                    </div>
+                    <p class="subtitle">Контрагент - владелец точки</p>
+                    <div class="groupbox align-right" v-if="!organization.organization_id">
+                        <button class="button" @click="showLinkOrganizationModal"><span>Назначить владельца</span></button>
+                    </div>
+                    <v-item :value="organization" title="name" v-if="organization.organization_id"></v-item>
+                    <div class="groupbox align-right" v-if="organization.organization_id">
+                        <button class="button" @click="showLinkOrganizationModal"><span>Сменить владельца</span></button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <p class="subtitle">Примечания</p>
+                    <div class="groupbox vertical">
+                        <textarea class="bordered-textarea" v-model="point.notes" placeholder="Примечания"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', linkOrganizationModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Назначение владельца точки</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="groupbox vertical">
+                            <vmd-input type="text" label="Поиск" v-model="linkOrganizationFilter"></vmd-input>
+                        </div>
+                    </div>
+                    <v-list class="overflow" :value="linkOrganizations" title="name" :clickable="true" @click="linkOrganization" :filter="linkOrganizationFilter"></v-list>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="hideLinkOrganizationModal"><span>Отмена</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var newPointPage = new Vue({
+        el: '#new-point-page',
+        name: 'newPointPage',
+        data: {
+            visible: false,
+            point: {
+                name: ''
+            },
+            linkOrganizations: [],
+            organization: {},
+            states: [],
+            selectedState: {},
+            localities: [],
+            selectedLocality: {},
+            linkOrganizationModalVisible: false,
+            linkOrganizationFilter: ''
+        },
+        computed: {
+            canSave: function () {
+                var p = this.point;
+                return (p.name && p.name.trim().length > 0 && this.selectedState && this.selectedLocality && p.name && p.name.trim().length > 0 && p.address && p.address.trim().length > 0 && this.organization.organization_id);
+            }
+        },
+        created: function () {
+            var self = this;
+            socket.on('data', function (data) {
+                if (data.name === 'getStates') {
+                    self.states = data.data;
+                    self.selectedState = self.states.filter(function (value) {
+                        return value.state_id === self.point.state_id;
+                    })[0];
+                }
+                if (data.name === 'getLocalities') {
+                    self.localities = data.data;
+                    self.selectedLocality = self.localities.filter(function (value) {
+                        return value.locality_id === self.point.locality_id;
+                    })[0];
+                }
+                if (data.name === 'getOrganizations')
+                    self.linkOrganizations = data.data;
+                if (data.name === 'addPoint' && data.data) {
+                    self.hide();
+                    socket.emit('command', {
+                        name: 'getPoints'
+                    });
+                }
+            });
+        },
+        methods: {
+            show: function () {
+                this.point = {};
+                this.organization = {
+                    organization_id: null
+                };
+                socket.emit('command', {name: 'getStates'});
+                socket.emit('command', {name: 'getLocalities'});
+                this.visible = true;
+                fab.hide();
+            },
+            hide: function () {
+                this.visible = false;
+                fab.show();
+            },
+            save: function () {
+                var self = this;
+                this.point.locality_id = this.selectedLocality.locality_id;
+                this.point.state_id = this.selectedState.state_id;
+                this.point.organization_id = this.organization.organization_id;
+                socket.emit('command', {
+                    name: 'addPoint',
+                    data: self.point
+                });
+            },
+            showLinkOrganizationModal: function () {
+                socket.emit('command', {name: 'getOrganizations'});
+                this.linkOrganizationModalVisible = true;
+            },
+            hideLinkOrganizationModal: function () {
+                this.linkOrganizationModalVisible = false;
+            },
+            linkOrganization: function (organization) {
+                this.organization = organization;
+                this.point.organization_id = this.organization.organization_id;
+                this.hideLinkOrganizationModal();
+            }
+        }
+    });
+</script>
+</body>

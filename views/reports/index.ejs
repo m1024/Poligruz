@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <%- include('../_layouts/head') %>
+</head>
+<body>
+<%- include('../_layouts/alerts') %>
+<%- include('../_layouts/sidebar') %>
+<div class="page" id="main">
+    <%- include('../_layouts/topbar') %>
+    <div class="content" id="content">
+        <div class="content-body">
+            <vmd-dropdown :items="reportsList" title="title" label="Отчет" v-model="report"></vmd-dropdown>
+            <div v-if="report.name === 'dayReport'">
+                <vmd-datepicker v-model="dayReportDate" label="Дата"></vmd-datepicker>
+                <table v-if="dayReportData">
+                    <thead>
+                    <tr>
+                        <th>Название компания</th>
+                        <th >Общий вес</th>
+                        <th>Общий объем</th>
+                        <th>Количество заявок</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <template v-for="(org, i) in dayReportData">
+                        <tr :key="org.organization_id">
+                            <td><a @click.prevent="org.visible = !org.visible">{{ org.organization_name }}</a></td>
+                            <td style="width: 140px; text-align: right">{{ org.weight_sum }}</td>
+                            <td style="width: 140px; text-align: right">{{ org.volume_sum }}</td>
+                            <td style="width: 140px; text-align: right">{{ org.count_ttl }}</td>
+                        </tr>
+                        <template v-if="org.visible">
+                            <tr v-for="man in org.mans" :key="man.person_id">
+                                <td style="padding-left: 48px">{{ man.surname + ' ' + man.name + ' ' + man.patronymic }}</td>
+                                <td style="width: 140px; text-align: right">{{ man.weight_sum }}</td>
+                                <td style="width: 140px; text-align: right">{{ man.volume_sum }}</td>
+                                <td style="width: 140px; text-align: right">{{ man.count_ttl }}</td>
+                            </tr>
+                        </template>
+                    </template>
+                    <tr>
+                        <td style="text-align: right; font-weight: 500">ИТОГО:</td>
+                        <td style="text-align: right; font-weight: 500">{{ dayReportSum('weight_sum') }}</td>
+                        <td style="text-align: right; font-weight: 500">{{ dayReportSum('volume_sum') }}</td>
+                        <td style="text-align: right; font-weight: 500">{{ dayReportSum('count_ttl') }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        var content = new Vue({
+            el: '#content',
+            name: 'content',
+            data: {
+                report: {},
+                reportsList: [
+                    {title: 'Отчет за день (кол-во необработанных заявок)', name: 'dayReport'}
+                ],
+                dayReportDate: '',
+                dayReportData: null
+            },
+            watch: {
+                dayReportDate: function (newVal) {
+                    socket.emit('command', {
+                        name: 'getReport_dayReport',
+                        data: {
+                            date: newVal
+                        }
+                    })
+                }
+            },
+            created: function () {
+                var self = this;
+                socket.on('data', function (data) {
+                    if (data.name === 'getReport_dayReport') {
+                        self.dayReportData = data.data;
+                    }
+                })
+            },
+            methods: {
+                dayReportSum: function (item) {
+                    var sum = 0;
+                    if (this.dayReportData) {
+                        for (var key in this.dayReportData) {
+                            sum += parseInt(this.dayReportData[key][item]);
+                        }
+                    }
+                    return sum;
+                }
+            }
+        })
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <%- include('../_layouts/head') %>
+</head>
+<body>
+<%- include('../_layouts/alerts') %>
+<%- include('../_layouts/sidebar') %>
+<%- include('../_layouts/fab') %>
+<div class="page" id="main">
+    <%- include('../_layouts/topbar') %>
+    <div class="content" id="content">
+        <div class="content-body">
+            <div class="groupbox">
+                <vmd-input v-model="personFilter" label="Поиск" placeholder="Фамилия Имя Отчество"></vmd-input>
+            </div>
+            <div class="panel">
+                <v-list :value="persons" title="full_snp" avatar="avatar" :clickable="true" @click="showPerson" :filter="personFilter"></v-list>
+            </div>
+        </div>
+    </div>
+    <script>
+        var content;
+        content = new Vue({
+            el: '#content',
+            name: 'content',
+            data: {
+                persons: [],
+                personFilter: ''
+            },
+            created: function () {
+                var self = this;
+                socket.on('data', function (data) {
+                    if (data.name === 'getPersons') {
+                        self.persons = data.data;
+                    }
+                });
+                bus.$on('fab-click', function () {
+                    if (newPersonPage.visible === false && personPage.visible === false)
+                        newPersonPage.show();
+                });
+
+                if (topbar.permissionCheck('managePersons'))
+                    fab.show();
+
+                socket.emit('command', {name: 'getPersons'});
+            },
+            methods: {
+                showPerson: function (person) {
+                    document.location.href = '/catalog/persons?person_id=' + person.person_id;
+                }
+            }
+        });
+    </script>
+</div>
+<!-- personPage -->
+<div class="subpage" :class="[visible ? 'visible' : '']" id="person-page">
+    <div class="topbar blue">
+        <div class="topbar-body">
+            <button class="toggle" @click="hide"><i class="mdi mdi-24px mdi-arrow-left"></i></button>
+            <span class="page-title">{{ person.full_snp }}</span>
+            <span class="space stretch"></span>
+            <button class="toggle"><i class="mdi mdi-24px mdi-delete" @click="showDelModal"></i></button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="content-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <v-avatar :path="person.avatar" :clickable="true" @click="showChangeAvatarModal"></v-avatar>
+                    <p class="subtitle">Основные параметры</p>
+                    <div class="groupbox vertical">
+                        <v-input v-model="person.surname" label="Фамилия *"></v-input>
+                        <v-input v-model="person.name" label="Имя"></v-input>
+                        <v-input v-model="person.patronymic" label="Отчество"></v-input>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <p class="subtitle">Сотрудник организации</p>
+                    <v-list :value="personOrganizations" title="name" :clickable="true" @click="clickOrganization" second-icon="delete" @second-click="showDelPersonFromOrganizationModal"></v-list>
+                    <div class="groupbox align-right">
+                        <button class="button" @click="showAddToOrganizationModal"><span>Добавить в организацию</span></button>
+                    </div>
+                    <p class="subtitle" v-if="personUsers.length > 0">Прикрепленные учетные записи ({{ personUsers.length }})</p>
+                    <v-list :value="personUsers" title="login" :clickable="true" @click="clickUser" v-if="personUsers.length > 0"></v-list>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div :class="['modal', delModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Удалить человека</span>
+                    </div>
+                    <div class="panel-body">
+                        <p>Вы действительно хотите удалить человека "{{ person.full_snp }}"?</p>
+                    </div>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="delPerson"><span>Да</span></button>
+                        <button class="inline-button" @click="hideDelModal"><span>Нет</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', changeAvatarModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Изменить аватар</span>
+                    </div>
+                    <div class="panel-body">
+                        <v-avatar :path="newAvatarPath"></v-avatar>
+                        <p>Данная функция находится в разработке.</p>
+                    </div>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button"><span>Сохранить</span></button>
+                        <button class="inline-button" @click="hideChangeAvatarModal"><span>Отмена</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', addToOrganizationModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Выбор организации</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="groupbox vertical">
+                            <vmd-input type="text" label="Поиск" v-model="organizationFilter" lead-icon="magnify"></vmd-input>
+                        </div>
+                    </div>
+                    <v-list class="overflow" :value="organizations" title="name" :clickable="true" @click="linkOrganization" :filter="organizationFilter"></v-list>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="hideAddToOrganizationModal"><span>Отмена</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', delPersonFromOrganizationModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Удаление из организации</span>
+                    </div>
+                    <div class="panel-body">
+                        <p>Вы действительно хотите удалить {{ person.full_snp }} из группы организации {{ delFromOrganization.name }}?</p>
+                    </div>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="delPersonFromOrganization"><span>Удалить</span></button>
+                        <button class="inline-button" @click="hideDelPersonFromOrganizationModal"><span>Отмена</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var personPage = new Vue({
+        el: '#person-page',
+        name: 'personPage',
+        data: {
+            visible: false,
+            person: {
+                person_id: 0,
+                surname: '',
+                name: '',
+                patronymic: '',
+                birth_date: '',
+                avatar_path: ''
+            },
+            personOrganizations: [],
+            personUsers: [],
+            personUsersValues: {
+                title: 'login'
+            },
+            delModalVisible: false,
+            changeAvatarModalVisible: false,
+            newAvatarPath: '',
+            addToOrganizationModalVisible: false,
+            delPersonFromOrganizationModalVisible: false,
+            organizations: [],
+            organizationFilter: '',
+            delFromOrganization: {}
+        },
+        created: function () {
+            var self = this;
+            socket.on('data', function (data) {
+                if (data.name === 'getPerson') {
+                    self.person = cloneObject(data.data);
+                    console.log(self.person.organization_id);
+                    socket.emit('command', {
+                        name: 'getPersonOrganizations',
+                        data: {
+                            personID: self.person.person_id
+                        }
+                    });
+                    self.show();
+                }
+                if (data.name === 'getPersonOrganizations')
+                    self.personOrganizations = data.data;
+                if (data.name === 'getOrganizations')
+                    self.organizations = data.data;
+                if (data.name === 'getPersonUsers') {
+                    self.personUsers = data.data;
+                }
+                if (data.name === 'delPerson' && data.data) {
+                    self.hide();
+                    socket.emit('command', {name: 'getPersons'});
+                }
+                if (data.name === 'delPersonFromOrganization' && data.data) {
+                    socket.emit('command', {
+                        name: 'getPersonOrganizations',
+                        data: {
+                            personID: self.person.person_id
+                        }
+                    });
+                }
+                if (data.name === 'addPersonToOrganization' && data.data) {
+                    socket.emit('command', {
+                        name: 'getPersonOrganizations',
+                        data: {
+                            personID: self.person.person_id
+                        }
+                    });
+                }
+            });
+
+            var personID = getParameterByName('person_id');
+            if (personID !== null) {
+                personID = parseInt(personID);
+                socket.emit('command', {
+                    name: 'getPerson',
+                    data: {
+                        personID: personID
+                    }
+                });
+            }
+        },
+        methods: {
+            show: function () {
+                var self = this;
+                if (topbar.permissionCheck('viewUsersPage')) {
+                    socket.emit('command', {
+                        name: 'getPersonUsers',
+                        data: {
+                            personID: self.person.person_id
+                        }
+                    });
+                }
+                this.visible = true;
+                fab.hide();
+            },
+            hide: function () {
+                this.visible = false;
+                fab.show();
+                history.go(-1);
+            },
+            clickUser: function (user) {
+                window.location.href = '/admin/users?user_id=' + user.user_id;
+            },
+            clickOrganization: function (organization) {
+                window.location.href = '/catalog/organizations?organization_id=' + organization.organization_id;
+            },
+            showDelModal: function () {
+                this.delModalVisible = true;
+            },
+            hideDelModal: function () {
+                this.delModalVisible = false;
+            },
+            delPerson: function () {
+                var self = this;
+                socket.emit('command', {
+                    name: 'delPerson',
+                    data: {
+                        personID: self.person.person_id
+                    }
+                });
+                this.hideDelModal();
+            },
+            showChangeAvatarModal: function () {
+                this.newAvatarPath = this.person.avatar_path;
+                this.changeAvatarModalVisible = true;
+            },
+            hideChangeAvatarModal: function () {
+                this.changeAvatarModalVisible = false;
+            },
+            showAddToOrganizationModal: function () {
+                var self = this;
+                self.organizationFilter = '';
+                socket.emit('command', {name: 'getOrganizations'});
+                this.addToOrganizationModalVisible = true;
+            },
+            hideAddToOrganizationModal: function () {
+                this.addToOrganizationModalVisible = false;
+            },
+            linkOrganization: function (organization) {
+                this.hideAddToOrganizationModal();
+                var self = this;
+                socket.emit('command', {
+                    name: 'addPersonToOrganization',
+                    data: {
+                        personID: self.person.person_id,
+                        organizationID: organization.organization_id
+                    }
+                });
+            },
+            showDelPersonFromOrganizationModal: function (organization) {
+                this.delFromOrganization = organization;
+                this.delPersonFromOrganizationModalVisible = true;
+            },
+            hideDelPersonFromOrganizationModal: function () {
+                this.delPersonFromOrganizationModalVisible = false;
+                this.delFromOrganization = {}
+            },
+            delPersonFromOrganization: function () {
+                var self = this;
+                socket.emit('command', {
+                    name: 'delPersonFromOrganization',
+                    data: {
+                        personID: self.person.person_id,
+                        organizationID: self.delFromOrganization.organization_id
+                    }
+                });
+                this.hideDelPersonFromOrganizationModal();
+            }
+        }
+    });
+</script>
+<!-- newPersonPage -->
+<div :class="['subpage', visible ? 'visible' : '']" id="new-person-page">
+    <div class="topbar teal">
+        <div class="topbar-body">
+            <button class="toggle"><i class="mdi mdi-24px mdi-close" @click="hide"></i></button>
+            <span class="page-title">{{ fullSNP }}</span>
+            <span class="space stretch"></span>
+            <button class="toggle" @click="addPerson" v-show="canAddPerson"><i class="mdi mdi-24px mdi-check"></i></button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="content-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="subtitle">Основные параметры</p>
+                    <div class="groupbox vertical">
+                        <v-input v-model="person.surname" label="Фамилия *"></v-input>
+                        <v-input v-model="person.name" label="Имя"></v-input>
+                        <v-input v-model="person.patronymic" label="Отчество"></v-input>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var newPersonPage = new Vue({
+        el: '#new-person-page',
+        name: 'newPersonPage',
+        data: {
+            visible: false,
+            person: {
+                surname: '',
+                name: '',
+                patronymic: ''
+            }
+        },
+        computed: {
+            fullSNP: function () {
+                return (this.person.surname + ' ' + this.person.name + ' ' + this.person.patronymic).trim();
+            },
+            canAddPerson: function () {
+                return this.person.surname.trim() !== '';
+            }
+        },
+        created: function () {
+            var self = this;
+            socket.on('data', function (data) {
+                if (data.name === 'addPerson' && data.data === true) {
+                    self.hide();
+                    socket.emit('command', {name: 'getPersons'});
+                }
+            });
+        },
+        methods: {
+            show: function () {
+                this.person = {
+                    surname: '',
+                    name: '',
+                    patronymic: ''
+                };
+                this.visible = true;
+                fab.hide();
+            },
+            hide: function () {
+                this.visible = false;
+                fab.show();
+            },
+            addPerson: function () {
+                var self = this;
+                socket.emit('command', {
+                    name: 'addPerson',
+                    data: this.person
+                });
+            }
+        }
+    });
+</script>
+</body>

@@ -1,0 +1,11 @@
+{
+  "db": {
+    "host": "localhost",
+    "user": "admin",
+    "password": "admin",
+    "database": "poligruz"
+  },
+  "server": {
+    "port": 3000
+  }
+}

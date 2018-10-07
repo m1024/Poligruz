@@ -1,0 +1,48 @@
+<div id="alerts">
+    <div v-for="alert in list" :key="alert.id" :class="alert.type">
+        <span class="messae">{{ alert.message }}</span>
+        <span class="space stretch"></span>
+        <button class="clear-button" @click="hideAlert(alert.id)"><i class="mdi mdi-24px mdi-close"></i></button>
+    </div>
+</div>
+<script>
+    var alerts = new Vue({
+        el: '#alerts',
+        name: 'alerts',
+        data: {
+            list: [],
+            counter: 0
+        },
+        created: function () {
+            var self = this;
+            socket.on('notification', function (alert) {
+                self.showAlert(alert.type, alert.message);
+            });
+        },
+        methods: {
+            showAlert: function (type, message, timer) {
+                if (timer === undefined) {
+                    timer = 5;
+                }
+                var alertId = this.counter++;
+                this.list.push({
+                    id: alertId,
+                    type: type,
+                    message: message
+                });
+                var self = this;
+                setTimeout(function () {
+                    self.hideAlert(alertId);
+                }, timer * 1000);
+            },
+            hideAlert: function (id) {
+                for (var i = 0; i < this.list.length; i++) {
+                    if (this.list[i].id === id) {
+                        this.list.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+        }
+    });
+</script>

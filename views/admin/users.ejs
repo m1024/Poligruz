@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <%- include('../_layouts/head') %>
+    <script src="/js/sha256.min.js"></script>
+</head>
+<body>
+<%- include('../_layouts/alerts') %>
+<%- include('../_layouts/sidebar') %>
+<%- include('../_layouts/fab') %>
+<div class="page" id="main">
+    <%- include('../_layouts/topbar') %>
+    <div class="content" id="content">
+        <div class="content-body">
+            <v-list :value="users" keys="user_id" title="login" subtitle="full_snp" :clickable="true" @click="showUser"></v-list>
+        </div>
+    </div>
+    <script>
+        var content = new Vue({
+            el: '#content',
+            name: 'content',
+            data: {
+                users: []
+            },
+            created: function () {
+                var self = this;
+                socket.on('data', function (data) {
+                    if (data.name === 'getUsers')
+                        self.users = data.data;
+                });
+
+                bus.$on('fab-click', function () {
+                    if (!userPage.visible && !newUserPage.visible)
+                        newUserPage.show();
+                });
+
+                if (topbar.permissionCheck('manageUsers'))
+                    fab.show();
+
+                socket.emit('command', {name: 'getUsers'});
+            },
+            methods: {
+                showUser: function (user) {
+                    document.location.href = '/admin/users?user_id=' + user.user_id;
+                }
+            }
+        });
+    </script>
+</div>
+<!-- userPage -->
+<div class="subpage" :class="[visible ? 'visible' : '']" id="user-page">
+    <div class="topbar blue">
+        <div class="topbar-body">
+            <button class="toggle" @click="hide"><i class="mdi mdi-24px mdi-arrow-left"></i></button>
+            <span class="page-title">{{ user.login }}</span>
+            <span class="space stretch"></span>
+            <button class="toggle"><i class="mdi mdi-24px mdi-delete" @click="showDelModal"></i></button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="content-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="subtitle">Основные параметры</p>
+                    <div class="groupbox vertical">
+                        <v-input v-model="user.login" label="Имя пользователя *"></v-input>
+                        <div class="groupbox">
+                            <v-checkbox v-model="user.enable" label="Активная учетная запись"></v-checkbox>
+                            <span class="space stretch"></span>
+                            <button class="button" @click="showChangePasswordModal"><span>Сменить пароль</span></button>
+                        </div>
+
+                        <span class="space"></span>
+                        <p class="subtitle">Владелец учетной записи</p>
+                        <v-item :value="user" title="full_snp" :avatar="user.avatar" :clickable="true" @click="showPerson"></v-item>
+                        <div class="groupbox align-right">
+                            <button class="button"><span>Сменить владельца</span></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <p class="subtitle">Состоит в группах ({{ userGroups.length }})</p>
+                    <v-list :value="userGroups" keys="group_id" title="name" subtitle="description" :clickable="true" @click="showGroup" second-icon="delete" @second-click="showDelUserFromGroupModal"></v-list>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', changePasswordModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Новый пароль</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="groupbox vertical">
+                            <v-input v-model="newPassword" label="Пароль" type="password"></v-input>
+                        </div>
+                    </div>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="changeUserPassword" :disabled="cantChangeUserPassword"><span>Сохранить</span></button>
+                        <button class="inline-button" @click="hideChangePasswordModal"><span>Отмена</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', delUserFromGroupModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Удалить из группы</span>
+                    </div>
+                    <div class="panel-body">
+                        <p>Удалитть пользователя {{ user.login }} из группы "{{ delFromGroup.name }}"?</p>
+                    </div>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="delUserFromGroup"><span>Удалить</span></button>
+                        <button class="inline-button" @click="hideDelUserFromGroupModal"><span>Отмена</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', delUserModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Удалить пользователя</span>
+                    </div>
+                    <div class="panel-body">
+                        <p>Удалить пользователя {{ user.login }}?</p>
+                    </div>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="delUser"><span>Удалить</span></button>
+                        <button class="inline-button" @click="hideDelUserModal"><span>Отмена</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var userPage = new Vue({
+        el: '#user-page',
+        name: 'userPage',
+        data: {
+            visible: false,
+            user: {},
+            userGroups: [],
+            newPassword: '',
+            changePasswordModalVisible: false,
+            delUserFromGroupModalVisible: false,
+            delUserModalVisible: false,
+            delFromGroup: {}
+        },
+        computed: {
+            cantChangeUserPassword: function () {
+                return !this.newPassword.trim().length > 0;
+            }
+        },
+        created: function () {
+            var self = this;
+            socket.on('data', function (data) {
+                if (data.name === 'getUser')
+                    self.show(cloneObject(data.data));
+                if (data.name === 'getUserGroups')
+                    self.userGroups = data.data;
+                if (data.name === 'delUserFromGroup' && data.data) {
+                    self.hideDelUserFromGroupModal();
+                    socket.emit('command', {
+                        name: 'getUserGroups',
+                        data: {
+                            userID: userID
+                        }
+                    });
+                }
+            });
+
+            var userID = getParameterByName('user_id');
+            if (userID !== null) {
+                userID = parseInt(userID);
+                socket.emit('command', {
+                    name: 'getUser',
+                    data: {
+                        userID: userID
+                    }
+                });
+                socket.emit('command', {
+                    name: 'getUserGroups',
+                    data: {
+                        userID: userID
+                    }
+                });
+            }
+        },
+        methods: {
+            show: function (user) {
+                this.user = user;
+                this.visible = true;
+            },
+            hide: function () {
+                this.visible = false;
+            },
+            showGroup: function (group) {
+                document.location.href = '/admin/groups?group_id=' + group.group_id;
+            },
+            showPerson: function () {
+                window.location.href = '/catalog/persons?person_id=' + this.user.person_id;
+            },
+            showDelModal: function () {
+                this.showDelUserModal();
+            },
+            showDelUserModal: function () {
+                this.delUserModalVisible = true;
+            },
+            hideDelUserModal: function () {
+                this.delUserModalVisible = false;
+            },
+            delUser: function () {
+                var self = this;
+                socket.emit('command', {
+                    name: 'delUser',
+                    data: {
+                        userID: self.user.user_id
+                    }
+                });
+                hideDelUserModal();
+                window.location.href = '/admin/users';
+            },
+            showChangePasswordModal: function () {
+                this.newPassword = '';
+                this.changePasswordModalVisible = true;
+            },
+            hideChangePasswordModal: function () {
+                this.changePasswordModalVisible = false;
+            },
+            changeUserPassword: function () {
+                var self = this;
+                socket.emit('command', {
+                    name: 'changeUserPassword',
+                    data: {
+                        userID: self.user.user_id,
+                        passwordHash: sha256(self.newPassword)
+                    }
+                });
+                this.hideChangePasswordModal();
+            },
+            showDelUserFromGroupModal: function(group) {
+                this.delFromGroup = group;
+                this.delUserFromGroupModalVisible = true;
+            },
+            hideDelUserFromGroupModal: function(group) {
+                this.delUserFromGroupModalVisible = false;
+            },
+            delUserFromGroup: function () {
+                var self = this;
+                socket.emit('command', {
+                    name: 'delUserFromGroup',
+                    data: {
+                        userID: self.user.user_id,
+                        groupID: self.delFromGroup.group_id
+                    }
+                });
+            }
+        }
+    });
+</script>
+<!-- newUserPage -->
+<div class="subpage" :class="[visible ? 'visible' : '']" id="new-user-page">
+    <div class="topbar teal">
+        <div class="topbar-body">
+            <button class="toggle" @click="hide"><i class="mdi mdi-24px mdi-close"></i></button>
+            <span class="page-title">{{ user.login }}</span>
+            <span class="space stretch"></span>
+            <button class="toggle" @click="save" v-if="canSave"><i class="mdi mdi-24px mdi-check"></i></button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="content-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="subtitle">Основные параметры</p>
+                    <div class="groupbox vertical">
+                        <v-input v-model="user.login" label="Имя пользователя *"></v-input>
+                        <v-input v-model="user.password" label="Пароль *" type="password"></v-input>
+                        <v-input v-model="user.passwordConfirm" label="Подтверждение пароля *" type="password"></v-input>
+                        <v-checkbox v-model="user.enable" label="Активная учетная запись"></v-checkbox>
+                    </div>
+                    <span class="space"></span>
+                    <p class="subtitle">Владелец учетной записи</p>
+                    <div class="groupbox align-right" v-if="user.person_id === 0">
+                        <button class="button" @click="showLinkPersonModal"><span>Назначить владельца</span></button>
+                    </div>
+                    <v-item :value="user" title="full_snp" :avatar="user.avatar" v-if="user.person_id !== 0"></v-item>
+                    <div class="groupbox align-right" v-if="user.person_id !== 0">
+                        <button class="button" @click="showLinkPersonModal"><span>Сменить владельца</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div :class="['modal', linkPersonModalVisible ? 'visible' : '']">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <span class="page-title">Назначение владельца</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="groupbox">
+                            <v-input type="text" label="Поиск" v-model="linkPersonFilter"></v-input>
+                        </div>
+                    </div>
+                    <v-list class="overflow" :value="linkPersons" title="full_snp" avatar="avatar" :clickable="true" @click="linkPerson" :filter="linkPersonFilter"></v-list>
+                    <div class="panel-footer align-right">
+                        <button class="inline-button" @click="hideLinkPersonModal"><span>Отмена</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var newUserPage = new Vue({
+        el: '#new-user-page',
+        name: 'newUserPage',
+        data: {
+            visible: false,
+            user: {
+                login: 'user',
+                password: '',
+                passwordConfirm: '',
+                enabled: true,
+                password_hash: '',
+                person_id: 0,
+                surname: '',
+                name: '',
+                patronymic: '',
+                full_snp: ''
+            },
+            linkPersonModalVisible: false,
+            linkPersons: [],
+            linkPersonFilter: ''
+        },
+        computed: {
+            canSave: function () {
+                return this.user.login.trim() !== '' && this.user.password.trim() !== '' && this.user.person_id !== 0 && this.user.password === this.user.passwordConfirm;
+            }
+        },
+        created: function () {
+            var self = this;
+            socket.on('data', function (data) {
+                if (data.name === 'getPersons') {
+                    self.linkPersons = data.data;
+                }
+                if (data.name === 'addUser' && data.data) {
+                    self.hide();
+                    socket.emit('command', {name: 'getUsers'});
+                }
+            });
+        },
+        methods: {
+            show: function () {
+                this.linkPersonFilter = '';
+                this.user = {
+                    login: 'user',
+                    password: '',
+                    passwordConfirm: '',
+                    enable: true,
+                    password_hash: '',
+                    person_id: 0,
+                    surname: '',
+                    name: '',
+                    patronymic: '',
+                    full_snp: '',
+                    avatar: '/img/users/user.jpg'
+                };
+                this.visible = true;
+                fab.hide();
+            },
+            hide: function () {
+                this.visible = false;
+                fab.show();
+            },
+            save: function () {
+                this.user.password_hash = sha256(this.user.password);
+                delete this.user.password;
+                delete this.user.passwordConfirm;
+                var self = this;
+                socket.emit('command', {
+                    name: 'addUser',
+                    data: self.user
+                });
+            },
+            showLinkPersonModal: function () {
+                socket.emit('command', {name: 'getPersons'});
+                this.linkPersonModalVisible = true;
+            },
+            hideLinkPersonModal: function () {
+                this.linkPersonModalVisible = false;
+            },
+            linkPerson: function (person) {
+                this.user.person_id = person.person_id;
+                this.user.full_snp = person.full_snp;
+                this.user.surname = person.surname;
+                this.user.name = person.name;
+                this.user.patronymic = person.patronymic;
+                this.user.avatar = person.avatar;
+                this.linkPersonModalVisible = false;
+            }
+        }
+    })
+</script>
+</body>
