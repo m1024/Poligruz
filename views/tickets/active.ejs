@@ -23,8 +23,9 @@
             </div>
             <div class="body">
                 <div class="groupbox vertical">
-                    <vmd-input v-model="loadCityFiler" label="Город погрузки"></vmd-input>
-                    <vmd-input v-model="unloadCityFiler" label="Город выгрузки"></vmd-input>
+                    <vmd-input v-model="loadCityFiler" label="Регион погрузки"></vmd-input>
+                    <vmd-input v-model="unloadCityFiler" label="Регион выгрузки"></vmd-input>
+                    <vmd-input v-model="statusNameFilter" label="Статус заявки"></vmd-input>
                 </div>
             </div>
         </div>
@@ -36,7 +37,8 @@
             data: {
                 tickets: [],
                 loadCityFiler: '',
-                unloadCityFiler: ''
+                unloadCityFiler: '',
+                statusNameFilter: ''
             },
             computed: {
                 filteredTickets: function () {
@@ -59,6 +61,15 @@
                     else {
                         end_filter = arr.filter(function (item) {
                             return item['unload_point_state_name'].toLowerCase().indexOf(self.unloadCityFiler.toLowerCase()) > -1;
+                        });
+                    }
+
+                    //Статус заявки
+                    if (this.statusNameFilter === '')
+                        end_filter = arr;
+                    else{
+                        end_filter = arr.filter(function (item) {
+                            return item['status_name'].toLowerCase().indexOf(self.statusNameFilter.toLowerCase()) > -1;
                         });
                     }
 

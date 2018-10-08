@@ -1,7 +1,7 @@
 {
   "db": {
     "host": "localhost",
-    "user": "admin",
+    "user": "postgres",
     "password": "admin",
     "database": "poligruz"
   },
