@@ -12,7 +12,10 @@
         <div class="content-body">
             <vmd-dropdown :items="reportsList" title="title" label="Отчет" v-model="report"></vmd-dropdown>
             <div v-if="report.name === 'dayReport'">
-                <vmd-datepicker v-model="dayReportDate" label="Дата"></vmd-datepicker>
+                <div class="row">
+                    <vmd-datepicker class="col-md-6" v-model="dayReportDate" label="Дата начала"></vmd-datepicker>
+                    <vmd-datepicker class="col-md-6" v-model="dayReportDateEnd" label="Дата окончания"></vmd-datepicker>
+                </div>
                 <table v-if="dayReportData">
                     <thead>
                     <tr>
@@ -60,10 +63,13 @@
                     {title: 'Отчет за день (кол-во необработанных заявок)', name: 'dayReport'}
                 ],
                 dayReportDate: '',
+                dayReportDateEnd: '',
                 dayReportData: null
             },
             watch: {
                 dayReportDate: function (newVal) {
+                    // if (dayReportDateEnd === '')
+                    //     return;
                     socket.emit('command', {
                         name: 'getReport_dayReport',
                         data: {
