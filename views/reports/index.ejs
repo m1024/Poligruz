@@ -15,6 +15,38 @@
                 <div class="row">
                     <vmd-datepicker class="col-md-6" v-model="dayReportDate" label="Дата начала"></vmd-datepicker>
                     <vmd-datepicker class="col-md-6" v-model="dayReportDateEnd" label="Дата окончания"></vmd-datepicker>
+
+                    <div class="col-md-12" >
+                        <h4 class="col-md-12" style="margin-top: 15px; margin-bottom: 5px">Дополнительные параметры:</h4>
+                        <div class="col-md-6">
+                            <input type="checkbox" id="isNeedAddManagerCheckbox" v-model="isNeedAddManager">
+                            <label for="isNeedAddManagerCheckbox">Менеджер</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="checkbox" id="isNeedAddCompanyCheckbox" v-model="isNeedAddCompany">
+                            <label for="isNeedAddCompanyCheckbox">Компания</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="checkbox" id="isNeedAddFromRegionCheckbox" v-model="isNeedAddFromRegion">
+                            <label for="isNeedAddFromRegionCheckbox">Регион погрузки</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="checkbox" id="isNeedAddDestinationRegionCheckbox" v-model="isNeedAddDestinationRegion">
+                            <label for="isNeedAddDestinationRegionCheckbox">Регион выгрузки</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="checkbox" id="isNeedAddStateCheckbox" v-model="isNeedAddState">
+                            <label for="isNeedAddStateCheckbox">Статус заявки</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="checkbox" id="isNeedUseArchiveCheckbox" v-model="isNeedUseArchive">
+                            <label for="isNeedUseArchiveCheckbox">Включить архивные заявки</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4"></div>
+                    <button class="inline-button col-md-4" style="margin: 15px" @click="getReport"><span>Получить отчет</span></button>
+                    <div class="col-md-4"></div>
                 </div>
                 <table v-if="dayReportData">
                     <thead>
@@ -58,25 +90,44 @@
             el: '#content',
             name: 'content',
             data: {
+                errors: [],
                 report: {},
                 reportsList: [
                     {title: 'Отчет за день (кол-во необработанных заявок)', name: 'dayReport'}
                 ],
                 dayReportDate: '',
                 dayReportDateEnd: '',
-                dayReportData: null
+                dayReportData: null,
+                showParams: true,
+                isNeedAddManager: false,
+                isNeedAddCompany: false,
+                isNeedAddFromRegion: false,
+                isNeedAddDestinationRegion: false,
+                isNeedAddState: false,
+                isNeedUseArchive: false,
             },
             watch: {
-                dayReportDate: function (newVal) {
-                    // if (dayReportDateEnd === '')
-                    //     return;
-                    socket.emit('command', {
-                        name: 'getReport_dayReport',
-                        data: {
-                            date: newVal
-                        }
-                    })
-                }
+//                dayReportDate: function (newVal) {
+//
+////                    if (this.dayReportDateEnd === ''){
+////                        let err = 'Нужно заполнить дату окончания';
+////                        this.errors.push(err);
+////                        alert(err);
+////                        return;
+////                    }
+////                    else if (Date.parse(this.dayReportDate) > Date.parse(this.dayReportDateEnd)){
+////                        let err = 'Дата окончания должна быть позже даты начала';
+////                        this.errors.push(err);
+////                        alert(err);
+////                        return;
+////                    }
+//                    socket.emit('command', {
+//                        name: 'getReport_dayReport',
+//                        data: {
+//                            date: newVal
+//                        }
+//                    })
+//                }
             },
             created: function () {
                 var self = this;
@@ -87,6 +138,23 @@
                 })
             },
             methods: {
+                getReport: function () {
+                    socket.emit('command', {
+                        name: 'getReport_periodReport',
+                        data: {
+                            date: this.dayReportDate,
+                            dateEnd: this.dayReportDateEnd,
+                            parameters: {
+                                isNeedAddManager: this.isNeedAddManager,
+                                isNeedAddCompany: this.isNeedAddCompany,
+                                isNeedAddFromRegion: this.isNeedAddFromRegion,
+                                isNeedAddDestinationRegion: this.isNeedAddDestinationRegion,
+                                isNeedAddState: this.isNeedAddState,
+                                isNeedUseArchive: this.isNeedUseArchive,
+                            }
+                        }
+                    })
+                },
                 dayReportSum: function (item) {
                     var sum = 0;
                     if (this.dayReportData) {
