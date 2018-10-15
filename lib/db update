@@ -1,0 +1,3 @@
+INSERT INTO permissions VALUES (720, 'periodReport', 'Отчет логистов за период', 21)
+INSERT INTO groups_permissions VALUES (1, 720)
+INSERT INTO commands (50, 'getReport_periodReport', 'Отчет логистов за период', 720)
