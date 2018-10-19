@@ -20,7 +20,7 @@
                         <h4 class="col-md-12" style="margin-top: 15px; margin-bottom: 5px">Дополнительные параметры:</h4>
                         <div class="col-md-6">
                             <input type="checkbox" id="isNeedAddManagerCheckbox" v-model="isNeedAddManager">
-                            <label for="isNeedAddManagerCheckbox">Менеджер</label>
+                            <label for="isNeedAddManagerCheckbox">Логист</label>
                         </div>
                         <div class="col-md-6">
                             <input type="checkbox" id="isNeedAddCompanyCheckbox" v-model="isNeedAddCompany">
@@ -94,6 +94,7 @@
                         <th v-if="isNeedAddDestinationRegion">Регион выгрузки</th>
                         <th v-if="isNeedAddState">Статус заявки</th>
                         <th>Вес</th>
+                        <th>Наценка</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -106,6 +107,7 @@
                             <td v-if="isNeedAddDestinationRegion">{{ticket.unloadpointstate_name}} {{ticket.unlocalitieslocalityshort_type}} {{ticket.unloadpoint_localityname}}</td>
                             <td v-if="isNeedAddState">{{ticket.ticketsstatusesstatus_name}}</td>
                             <td>{{ticket.weight}}</td>
+                            <td>{{ticket.closed_cost}}</td>
                         </tr>
                     </template>
                     <!--<tr>-->
@@ -128,17 +130,18 @@
                 errors: [],
                 report: {},
                 reportsList: [
-                    {title: 'Отчет за день (кол-во необработанных заявок)', name: 'dayReport'}
+                    {title: 'Отчет за период', name: 'dayReport'}
                 ],
+                managers: [],
                 dayReportDate: '',
                 dayReportDateEnd: '',
                 dayReportData: null,
                 showParams: true,
-                isNeedAddManager: false,
-                isNeedAddCompany: false,
-                isNeedAddFromRegion: false,
-                isNeedAddDestinationRegion: false,
-                isNeedAddState: false,
+                isNeedAddManager: true,
+                isNeedAddCompany: true,
+                isNeedAddFromRegion: true,
+                isNeedAddDestinationRegion: true,
+                isNeedAddState: true,
                 isNeedUseArchive: false,
             },
 //            watch: {
@@ -179,6 +182,11 @@
                 socket.on('data', function (data) {
                     if (data.name === 'getReport_dayReport') {
                         self.dayReportData = data.data;
+
+                        self.managers = self.dayReportData.map(function(obj)
+                            {
+                                return { sname: obj.logistperson_surname, name: obj.logistperson_name, pname: obj.logistperson_patronymic }
+                            });
                     }
                 })
             },

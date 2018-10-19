@@ -26,6 +26,8 @@
                     <vmd-input v-model="loadCityFiler" label="Регион погрузки"></vmd-input>
                     <vmd-input v-model="unloadCityFiler" label="Регион выгрузки"></vmd-input>
                     <vmd-input v-model="statusNameFilter" label="Статус заявки"></vmd-input>
+                    <vmd-input v-model="companyNameFilter" label="Компания"></vmd-input>
+                    <vmd-input v-model="logistNameFilter" label="Логист"></vmd-input>
                 </div>
             </div>
         </div>
@@ -38,7 +40,9 @@
                 tickets: [],
                 loadCityFiler: '',
                 unloadCityFiler: '',
-                statusNameFilter: ''
+                statusNameFilter: '',
+                companyNameFilter: '',
+                logistNameFilter: ''
             },
             computed: {
                 filteredTickets: function () {
@@ -59,7 +63,7 @@
                     if (this.unloadCityFiler === '')
                         end_filter = arr;
                     else {
-                        end_filter = arr.filter(function (item) {
+                        arr = arr.filter(function (item) {
                             return item['unload_point_state_name'].toLowerCase().indexOf(self.unloadCityFiler.toLowerCase()) > -1;
                         });
                     }
@@ -68,11 +72,32 @@
                     if (this.statusNameFilter === '')
                         end_filter = arr;
                     else{
-                        end_filter = arr.filter(function (item) {
+                        arr = arr.filter(function (item) {
                             return item['status_name'].toLowerCase().indexOf(self.statusNameFilter.toLowerCase()) > -1;
                         });
                     }
+                    
+                    //Компания
+                    if (this.companyNameFilter === '')
+                        end_filter = arr;
+                    else{
+                        arr = arr.filter(function (item) {
+                            return item['load_organization_name'].toLowerCase().indexOf(self.companyNameFilter.toLowerCase()) > -1 ||
+                                   item['unload_organization_name'].toLowerCase().indexOf(self.companyNameFilter.toLowerCase()) > -1;
+                        });
+                    }
 
+                    //Логист
+                    if (this.logistNameFilter === '')
+                        end_filter = arr;
+                    else{
+                        arr = arr.filter(function (item) {
+                            if (item['logist_full_name'] == null) return false;
+                            return item['logist_full_name'].toLowerCase().indexOf(self.logistNameFilter.toLowerCase()) > -1;
+                        });
+                    }
+                    end_filter = arr;
+                    
                     // Результат
                     return end_filter;
                 }
@@ -263,7 +288,7 @@
                 return (this.ticket.status_id === 3 || this.ticket.status_id === 5) && (topbar.permissionCheck('takeOrganizationTickets') || topbar.permissionCheck('takeAllTickets'))
             },
             closeCheck: function () {
-                return this.ticket.status_id === 4 && (topbar.permissionCheck('takeOrganizationTickets') || topbar.permissionCheck('takeAllTickets'))
+                return this.ticket.status_id <= 4 && (topbar.permissionCheck('takeOrganizationTickets') || topbar.permissionCheck('takeAllTickets'))
             }
         },
         created: function () {
