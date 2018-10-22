@@ -88,6 +88,7 @@
                     <thead>
                     <tr>
                         <th v-if="isNeedAddManager">Менеджер</th>
+                        <!-- <vmd-dropdown :items="logists" title="title" label="Логист" v-model="logists"></vmd-dropdown> -->
                         <th v-if="isNeedAddCompany">Компания (отправка)</th>
                         <th v-if="isNeedAddFromRegion">Регион погрузки</th>
                         <th v-if="isNeedAddCompany">Компания (получение)</th>
@@ -102,7 +103,6 @@
                     <template v-for="(ticket, i) in dayReportData">
                         <tr :key="ticket.loadcompany_name">
                             <td v-if="isNeedAddManager">{{ticket.logistperson_surname}} {{ticket.logistperson_name}} {{ticket.logistperson_patronymic}}</td>
-                            <!-- <vmd-dropdown :items="logists" title="title" label="Логист" v-model="report"></vmd-dropdown> -->
                             <td v-if="isNeedAddCompany">{{ticket.loadcompany_name}}</td>
                             <td v-if="isNeedAddFromRegion">{{ticket.loadpointstate_name}} {{ticket.localitieslocalityshort_type}} {{ticket.loadpoint_localityname}}</td>
                             <td v-if="isNeedAddCompany">{{ticket.unloadcompany_name}}</td>

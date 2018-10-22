@@ -23,8 +23,7 @@
     });
 
     socket.on('delete_cookie', (name) => {
-        //document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-        alert(name + ": " + document.cookie.toString());
+        alert("Ошибка доступа. Сессия недействительна, пожалуйста удалите файлы cookies для этого сайта.");
     });
 </script>
 <script src="/js/luxon.min.js"></script>

@@ -13932,3 +13932,282 @@ WHERE t.status_id IN (1,2,3,4) AND      t.creation_datetime > '2018-10-01 00:00:
 2018-10-22T11:20:21.672Z [DEBUG] messages: Send data: getReport_periodReport. To: T91bbwROu2yDoHbRAAAE
 2018-10-22T11:20:43.861Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
 2018-10-22T11:20:43.889Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/js/luxon.min.js.map';
+2018-10-22T11:29:18.138Z [DEBUG] db: DB query: SELECT * FROM states ORDER BY state_name
+2018-10-22T11:29:18.144Z [DEBUG] db: DB query: SELECT * FROM localities ORDER BY locality_type
+2018-10-22T11:29:18.145Z [DEBUG] db: DB query: SELECT * FROM load_types ORDER BY load_type_id
+2018-10-22T11:29:18.146Z [DEBUG] db: DB query: SELECT * FROM pages         ORDER BY page_id ASC;
+2018-10-22T11:29:18.320Z [DEBUG] db: DB query: SELECT *, permissions.description FROM permissions            INNER JOIN pages ON permissions.owner_page_id = pages.page_id        ORDER BY pages.page_id;
+2018-10-22T11:29:32.831Z [DEBUG] io: Client connected:  976VRP7ZyC9Bw1OhAAAA
+2018-10-22T11:30:21.433Z [DEBUG] commands: Command: logon. From: 976VRP7ZyC9Bw1OhAAAA
+2018-10-22T11:30:21.434Z [DEBUG] db: DB query: SELECT * FROM users WHERE login = 'admin' AND password_hash = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918' AND enable = TRUE;
+2018-10-22T11:30:21.470Z [DEBUG] db: DB query: SELECT * FROM persons WHERE person_id=1;
+2018-10-22T11:30:21.480Z [DEBUG] commands: Logon granted for: admin. From: 976VRP7ZyC9Bw1OhAAAA
+2018-10-22T11:30:21.482Z [DEBUG] users: Add user: admin, SessionID: h7SD2ukYvbtMAmtBafydxDw3Oar2znMF
+2018-10-22T11:30:21.483Z [INFO]  users: User admin was added
+2018-10-22T11:30:21.484Z [DEBUG] messages: Send command: logon. To: 976VRP7ZyC9Bw1OhAAAA
+2018-10-22T11:30:21.619Z [DEBUG] io: Client connected:  SJDMj9Wb0bKI2VweAAAB
+2018-10-22T11:31:06.533Z [DEBUG] commands: Command: logon. From: SJDMj9Wb0bKI2VweAAAB
+2018-10-22T11:31:30.743Z [DEBUG] db: DB query: SELECT * FROM users WHERE login = 'admin' AND password_hash = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918' AND enable = TRUE;
+2018-10-22T11:31:30.746Z [DEBUG] io: Client connected:  KcySfTSsHu1AEHL5AAAC
+2018-10-22T11:31:30.776Z [DEBUG] db: DB query: SELECT * FROM persons WHERE person_id=1;
+2018-10-22T11:31:30.777Z [DEBUG] commands: Logon granted for: admin. From: SJDMj9Wb0bKI2VweAAAB
+2018-10-22T11:31:30.778Z [DEBUG] users: Add user: admin, SessionID: 5qVCo8Vp6gSndKCxgKTAtnpiM88b6RO2
+2018-10-22T11:31:30.779Z [INFO]  users: User admin was added
+2018-10-22T11:31:30.779Z [DEBUG] messages: Send command: logon. To: SJDMj9Wb0bKI2VweAAAB
+2018-10-22T11:31:43.023Z [DEBUG] commands: Command: logon. From: KcySfTSsHu1AEHL5AAAC
+2018-10-22T11:32:13.406Z [WARN]  commands: Session undefined: logon. From: KcySfTSsHu1AEHL5AAAC
+2018-10-22T11:33:11.250Z [DEBUG] db: DB query: SELECT * FROM states ORDER BY state_name
+2018-10-22T11:33:11.257Z [DEBUG] db: DB query: SELECT * FROM localities ORDER BY locality_type
+2018-10-22T11:33:11.259Z [DEBUG] db: DB query: SELECT * FROM load_types ORDER BY load_type_id
+2018-10-22T11:33:11.260Z [DEBUG] db: DB query: SELECT * FROM pages         ORDER BY page_id ASC;
+2018-10-22T11:33:11.430Z [DEBUG] io: Client connected:  -UZIDNms-f614E9wAAAA
+2018-10-22T11:33:11.442Z [DEBUG] db: DB query: SELECT *, permissions.description FROM permissions            INNER JOIN pages ON permissions.owner_page_id = pages.page_id        ORDER BY pages.page_id;
+2018-10-22T11:33:19.905Z [DEBUG] io: Client connected:  pO06r7B-065epyHTAAAB
+2018-10-22T11:34:04.891Z [DEBUG] commands: Command: logon. From: pO06r7B-065epyHTAAAB
+2018-10-22T11:34:43.690Z [DEBUG] db: DB query: SELECT * FROM users WHERE login = 'admin' AND password_hash = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918' AND enable = TRUE;
+2018-10-22T11:34:43.694Z [DEBUG] io: Client connected:  SoUfa0RmpNwz3LiYAAAC
+2018-10-22T11:34:43.696Z [DEBUG] io: Client connected:  oDSoyEuMXAqVAvHmAAAD
+2018-10-22T11:34:43.734Z [DEBUG] db: DB query: SELECT * FROM persons WHERE person_id=1;
+2018-10-22T11:34:43.736Z [DEBUG] commands: Logon granted for: admin. From: pO06r7B-065epyHTAAAB
+2018-10-22T11:34:43.738Z [DEBUG] users: Add user: admin, SessionID: fvwSAiKRDSvRFIhOaDewZygm0-_Jra25
+2018-10-22T11:34:43.738Z [INFO]  users: User admin was added
+2018-10-22T11:34:43.740Z [DEBUG] messages: Send command: logon. To: pO06r7B-065epyHTAAAB
+2018-10-22T11:34:43.755Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T11:34:43.771Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/';
+2018-10-22T11:34:43.772Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/' AND users.user_id=1;
+2018-10-22T11:34:43.774Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T11:34:43.909Z [DEBUG] io: Client connected:  gECs5MrDEJI6nh1HAAAE
+2018-10-22T11:35:03.106Z [DEBUG] io: Client connected:  McYqo5aSISTzkTUjAAAF
+2018-10-22T11:36:15.366Z [DEBUG] commands: Command: logon. From: McYqo5aSISTzkTUjAAAF
+2018-10-22T11:39:21.470Z [DEBUG] db: DB query: SELECT * FROM states ORDER BY state_name
+2018-10-22T11:39:21.475Z [DEBUG] db: DB query: SELECT * FROM localities ORDER BY locality_type
+2018-10-22T11:39:21.476Z [DEBUG] db: DB query: SELECT * FROM load_types ORDER BY load_type_id
+2018-10-22T11:39:21.477Z [DEBUG] db: DB query: SELECT * FROM pages         ORDER BY page_id ASC;
+2018-10-22T11:39:21.654Z [DEBUG] db: DB query: SELECT *, permissions.description FROM permissions            INNER JOIN pages ON permissions.owner_page_id = pages.page_id        ORDER BY pages.page_id;
+2018-10-22T11:39:21.850Z [DEBUG] io: Client connected:  DkaQapZM_HAUvTwrAAAA
+2018-10-22T11:40:00.848Z [DEBUG] db: DB query: SELECT * FROM states ORDER BY state_name
+2018-10-22T11:40:00.855Z [DEBUG] db: DB query: SELECT * FROM localities ORDER BY locality_type
+2018-10-22T11:40:00.856Z [DEBUG] db: DB query: SELECT * FROM load_types ORDER BY load_type_id
+2018-10-22T11:40:00.856Z [DEBUG] db: DB query: SELECT * FROM pages         ORDER BY page_id ASC;
+2018-10-22T11:40:01.035Z [DEBUG] db: DB query: SELECT *, permissions.description FROM permissions            INNER JOIN pages ON permissions.owner_page_id = pages.page_id        ORDER BY pages.page_id;
+2018-10-22T11:40:03.836Z [DEBUG] io: Client connected:  i8eMZiWOgpgluaIuAAAA
+2018-10-22T11:40:39.360Z [DEBUG] db: DB query: SELECT * FROM states ORDER BY state_name
+2018-10-22T11:40:39.365Z [DEBUG] db: DB query: SELECT * FROM localities ORDER BY locality_type
+2018-10-22T11:40:39.366Z [DEBUG] db: DB query: SELECT * FROM load_types ORDER BY load_type_id
+2018-10-22T11:40:39.367Z [DEBUG] db: DB query: SELECT * FROM pages         ORDER BY page_id ASC;
+2018-10-22T11:40:39.551Z [DEBUG] db: DB query: SELECT *, permissions.description FROM permissions            INNER JOIN pages ON permissions.owner_page_id = pages.page_id        ORDER BY pages.page_id;
+2018-10-22T11:40:52.341Z [DEBUG] io: Client connected:  R5Oe0EEQ7YaGL-rGAAAA
+2018-10-22T11:43:17.209Z [DEBUG] io: Client connected:  NvTcYoy9fZbmh1WEAAAB
+2018-10-22T11:44:25.709Z [DEBUG] commands: Command: logon. From: NvTcYoy9fZbmh1WEAAAB
+2018-10-22T11:52:00.334Z [DEBUG] db: DB query: SELECT * FROM states ORDER BY state_name
+2018-10-22T11:52:00.339Z [DEBUG] db: DB query: SELECT * FROM localities ORDER BY locality_type
+2018-10-22T11:52:00.340Z [DEBUG] db: DB query: SELECT * FROM load_types ORDER BY load_type_id
+2018-10-22T11:52:00.341Z [DEBUG] db: DB query: SELECT * FROM pages         ORDER BY page_id ASC;
+2018-10-22T11:52:00.516Z [DEBUG] db: DB query: SELECT *, permissions.description FROM permissions            INNER JOIN pages ON permissions.owner_page_id = pages.page_id        ORDER BY pages.page_id;
+2018-10-22T11:52:05.799Z [DEBUG] io: Client connected:  KT3l9hQfn5rJ7icDAAAA
+2018-10-22T11:52:15.067Z [DEBUG] io: Client connected:  pdNp6TvXul_UJhyFAAAB
+2018-10-22T11:52:27.347Z [DEBUG] commands: Command: logon. From: pdNp6TvXul_UJhyFAAAB
+2018-10-22T11:52:27.347Z [DEBUG] db: DB query: SELECT * FROM users WHERE login = 'admin' AND password_hash = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918' AND enable = TRUE;
+2018-10-22T11:52:27.381Z [DEBUG] db: DB query: SELECT * FROM persons WHERE person_id=1;
+2018-10-22T11:52:27.392Z [DEBUG] commands: Logon granted for: admin. From: pdNp6TvXul_UJhyFAAAB
+2018-10-22T11:52:27.393Z [DEBUG] users: Add user: admin, SessionID: s3Y6NELs10SHP5wS4xdDmdp7UOXgnVac
+2018-10-22T11:52:27.394Z [INFO]  users: User admin was added
+2018-10-22T11:52:27.395Z [DEBUG] messages: Send command: logon. To: pdNp6TvXul_UJhyFAAAB
+2018-10-22T11:52:27.584Z [DEBUG] io: Client connected:  8oA3_qsXUyuWbgkIAAAC
+2018-10-22T11:52:41.649Z [DEBUG] commands: Command: logon. From: 8oA3_qsXUyuWbgkIAAAC
+2018-10-22T11:52:41.649Z [DEBUG] db: DB query: SELECT * FROM users WHERE login = 'admin' AND password_hash = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918' AND enable = TRUE;
+2018-10-22T11:52:41.674Z [DEBUG] db: DB query: SELECT * FROM persons WHERE person_id=1;
+2018-10-22T11:52:41.676Z [DEBUG] commands: Logon granted for: admin. From: 8oA3_qsXUyuWbgkIAAAC
+2018-10-22T11:52:41.676Z [DEBUG] users: Add user: admin, SessionID: YpOtqJMzSOUos-Krs_Qqu-w_kInddSpF
+2018-10-22T11:52:41.677Z [INFO]  users: User admin was added
+2018-10-22T11:52:41.678Z [DEBUG] messages: Send command: logon. To: 8oA3_qsXUyuWbgkIAAAC
+2018-10-22T11:52:41.830Z [DEBUG] io: Client connected:  8jBYPtC3PwLDxGVTAAAD
+2018-10-22T11:53:16.851Z [DEBUG] db: DB query: SELECT * FROM states ORDER BY state_name
+2018-10-22T11:53:16.857Z [DEBUG] db: DB query: SELECT * FROM localities ORDER BY locality_type
+2018-10-22T11:53:16.858Z [DEBUG] db: DB query: SELECT * FROM load_types ORDER BY load_type_id
+2018-10-22T11:53:16.859Z [DEBUG] db: DB query: SELECT * FROM pages         ORDER BY page_id ASC;
+2018-10-22T11:53:17.017Z [DEBUG] db: DB query: SELECT *, permissions.description FROM permissions            INNER JOIN pages ON permissions.owner_page_id = pages.page_id        ORDER BY pages.page_id;
+2018-10-22T11:53:17.031Z [DEBUG] io: Client connected:  rzeniMNa90oIZK6mAAAA
+2018-10-22T11:53:21.236Z [DEBUG] io: Client connected:  kLIfQAoso5Z7qs-6AAAB
+2018-10-22T11:53:26.452Z [DEBUG] commands: Command: logon. From: kLIfQAoso5Z7qs-6AAAB
+2018-10-22T11:53:26.453Z [WARN]  commands: Session undefined: logon. From: kLIfQAoso5Z7qs-6AAAB
+2018-10-22T11:53:33.609Z [DEBUG] commands: Command: logon. From: kLIfQAoso5Z7qs-6AAAB
+2018-10-22T11:53:33.609Z [WARN]  commands: Session undefined: logon. From: kLIfQAoso5Z7qs-6AAAB
+2018-10-22T15:41:12.074Z [DEBUG] db: DB query: SELECT * FROM states ORDER BY state_name
+2018-10-22T15:41:12.089Z [DEBUG] db: DB query: SELECT * FROM localities ORDER BY locality_type
+2018-10-22T15:41:12.090Z [DEBUG] db: DB query: SELECT * FROM load_types ORDER BY load_type_id
+2018-10-22T15:41:12.091Z [DEBUG] db: DB query: SELECT * FROM pages         ORDER BY page_id ASC;
+2018-10-22T15:41:13.078Z [DEBUG] db: DB query: SELECT *, permissions.description FROM permissions            INNER JOIN pages ON permissions.owner_page_id = pages.page_id        ORDER BY pages.page_id;
+2018-10-22T15:41:15.187Z [DEBUG] io: Client connected:  N4xklTsUQSQlfmkpAAAA
+2018-10-22T15:41:20.195Z [DEBUG] commands: Command: logon. From: N4xklTsUQSQlfmkpAAAA
+2018-10-22T15:41:20.196Z [DEBUG] db: DB query: SELECT * FROM users WHERE login = 'admin' AND password_hash = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918' AND enable = TRUE;
+2018-10-22T15:41:20.211Z [DEBUG] db: DB query: SELECT * FROM persons WHERE person_id=1;
+2018-10-22T15:41:20.224Z [DEBUG] commands: Logon granted for: admin. From: N4xklTsUQSQlfmkpAAAA
+2018-10-22T15:41:20.226Z [DEBUG] users: Add user: admin, SessionID: voGFoT6yTIY5PBJ84f9Y7M0szvKd59U_
+2018-10-22T15:41:20.226Z [INFO]  users: User admin was added
+2018-10-22T15:41:20.227Z [DEBUG] messages: Send command: logon. To: N4xklTsUQSQlfmkpAAAA
+2018-10-22T15:41:20.238Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T15:41:20.257Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/';
+2018-10-22T15:41:20.258Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/' AND users.user_id=1;
+2018-10-22T15:41:20.260Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T15:41:20.394Z [DEBUG] io: Client connected:  kevOtDs1UBy0f1d2AAAB
+2018-10-22T15:41:22.218Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T15:41:22.221Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/admin';
+2018-10-22T15:41:22.222Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/admin' AND users.user_id=1;
+2018-10-22T15:41:22.223Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T15:41:22.232Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T15:41:22.235Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/admin/panel';
+2018-10-22T15:41:22.236Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/admin/panel' AND users.user_id=1;
+2018-10-22T15:41:22.237Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T15:41:22.322Z [DEBUG] io: Client connected:  dzTAbiSuP1C3UzKqAAAC
+2018-10-22T15:41:23.230Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T15:41:23.234Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/reports';
+2018-10-22T15:41:23.235Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/reports' AND users.user_id=1;
+2018-10-22T15:41:23.237Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T15:41:23.330Z [DEBUG] io: Client connected:  qrZXVJodWpaNGhYfAAAD
+2018-10-22T15:41:34.792Z [DEBUG] commands: Command: getReport_periodReport. From: qrZXVJodWpaNGhYfAAAD
+2018-10-22T15:41:34.793Z [DEBUG] db: DB query: SELECT COUNT(*)             FROM commands                 INNER JOIN permissions ON commands.permission_id = permissions.permission_id                 INNER JOIN groups_permissions ON permissions.permission_id = groups_permissions.permission_id                 INNER JOIN groups ON groups_permissions.group_id = groups.group_id                 INNER JOIN users_groups ON groups.group_id = users_groups.group_id                 INNER JOIN users ON users.user_id = users_groups.user_id             WHERE                 commands.name = 'getReport_periodReport'                 AND users.login = 'admin';
+2018-10-22T15:41:34.915Z [DEBUG] commands: Granted command  getReport_periodReport  for user admin
+2018-10-22T15:41:34.932Z [DEBUG] db: DB query: SELECT 	
+	loadpointState.loadpointState_name,
+	loadpointLocalities.localitiesLocalityShort_type,
+	loadpoint.loadpoint_localityname,
+	unloadpointState.unloadpointState_name,
+	unloadpointLocalities.unlocalitiesLocalityShort_type,
+	unloadpoint.unloadpoint_localityname,
+	ticketsStatuses.ticketsStatusesStatus_name,
+	loadCompany.loadCompany_name,
+	unloadCompany.unloadCompany_name,
+	logistPerson.logistPerson_surname,
+	logistPerson.logistPerson_name,
+	logistPerson.logistPerson_patronymic,
+	t.weight,
+	t.volume,
+	t.closed_cost
+	FROM tickets AS t
+			 /*следующие 3 join подгружают местоположение места погрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as loadpoint_id,
+				 	points.state_id as loadpoint_stateid,
+				 	points.locality_id as loadpoint_localityid,
+				 	points.locality_name as loadpoint_localityname
+				 from points
+			 ) as loadpoint on t.load_point_id = loadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as loadpointState_id,
+				 	states.state_name as loadpointState_name
+				 from
+				 	states
+			 ) as loadpointState on loadpoint_stateid = loadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as localitiesLocality_id,
+				 	localities.locality_short_type as localitiesLocalityShort_type
+				from
+				 	localities
+			 ) as loadpointLocalities on loadpoint_localityid = localitiesLocality_id
+			/*следующие 3 join подгружают местоположение места выгрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as unloadpoint_id,
+				 	points.state_id as unloadpoint_stateid,
+				 	points.locality_id as unloadpoint_localityid,
+				 	points.locality_name as unloadpoint_localityname
+				 from points
+			 ) as unloadpoint on t.unload_point_id = unloadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as unloadpointState_id,
+				 	states.state_name as unloadpointState_name
+				 from
+				 	states
+			 ) as unloadpointState on unloadpoint_stateid = unloadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as unlocalitiesLocality_id,
+				 	localities.locality_short_type as unlocalitiesLocalityShort_type
+				from
+				 	localities
+			 ) as unloadpointLocalities on unloadpoint_localityid = unlocalitiesLocality_id
+			 /* подгружаем словесное описание статуса заявки */
+			 left join(
+			 	select
+					tickets_statuses.ticket_status_id as ticketsStatusesStatus_id,
+				 	tickets_statuses.ticket_status_name as ticketsStatusesStatus_name
+				from tickets_statuses
+			 ) as ticketsStatuses on t.status_id = ticketsStatusesStatus_id
+			 /* подгружаем название компании - погрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as loadCompany_id,
+				 	organizations.name as loadCompany_name
+				from organizations
+			 ) as loadCompany on t.load_organization_id = loadCompany_id
+			 /* подгружаем название компании - выгрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as unloadCompany_id,
+				 	organizations.name as unloadCompany_name
+				from organizations
+			 ) as unloadCompany on t.unload_organization_id = unloadCompany_id
+			 /* подгружаем имя логиста */
+			 left join(
+				 select
+				 	persons.person_id as logistPerson_id,
+				 	persons.name as logistPerson_name,
+				 	persons.surname as logistPerson_surname,
+				 	persons.patronymic as logistPerson_patronymic
+				 from persons
+			 ) as logistPerson on t.logist_person_id = logistPerson_id
+WHERE t.status_id IN (1,2,3,4) AND      t.creation_datetime > '2018-10-01 00:00:00 +3:00'
+      AND t.creation_datetime < 'Invalid date 23:59:59 +3:00'
+2018-10-22T15:41:34.961Z [ERROR] db: Qery error: { error: invalid input syntax for type timestamp with time zone: "Invalid date 23:59:59 +3:00"
+    at Connection.parseE (d:\Node\Poligruz\node_modules\pg\lib\connection.js:553:11)
+    at Connection.parseMessage (d:\Node\Poligruz\node_modules\pg\lib\connection.js:378:19)
+    at Socket.<anonymous> (d:\Node\Poligruz\node_modules\pg\lib\connection.js:119:22)
+    at Socket.emit (events.js:182:13)
+    at addChunk (_stream_readable.js:283:12)
+    at readableAddChunk (_stream_readable.js:264:11)
+    at Socket.Readable.push (_stream_readable.js:219:10)
+    at TCP.onStreamRead [as onread] (internal/stream_base_commons.js:94:17)
+  name: 'error',
+  length: 157,
+  severity: 'ERROR',
+  code: '22007',
+  detail: undefined,
+  hint: undefined,
+  position: '3779',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'datetime.c',
+  line: '3803',
+  routine: 'DateTimeParseError' }
+2018-10-22T15:41:34.963Z [DEBUG] messages: Send error message: Ошибка. Невозможно создать отчет.. To: qrZXVJodWpaNGhYfAAAD
+2018-10-22T15:44:19.691Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T15:44:19.728Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/reports';
+2018-10-22T15:44:19.730Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/reports' AND users.user_id=1;
+2018-10-22T15:44:19.732Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T15:44:19.863Z [DEBUG] io: Client connected:  6JfHfKtopr6TGzAbAAAE
+2018-10-22T15:44:30.742Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T15:44:30.780Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/js/luxon.min.js.map';
+2018-10-22T15:45:50.858Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T15:45:50.882Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/reports';
+2018-10-22T15:45:50.884Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/reports' AND users.user_id=1;
+2018-10-22T15:45:50.887Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T15:45:51.119Z [DEBUG] io: Client connected:  d44c7dg0THv3pRZNAAAF
+2018-10-22T15:45:51.154Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T15:45:51.156Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/js/luxon.min.js.map';
