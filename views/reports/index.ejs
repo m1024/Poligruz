@@ -93,6 +93,7 @@
                         <th v-if="isNeedAddCompany">Компания (получение)</th>
                         <th v-if="isNeedAddDestinationRegion">Регион выгрузки</th>
                         <th v-if="isNeedAddState">Статус заявки</th>
+                        <th>Объем</th>
                         <th>Вес</th>
                         <th>Наценка</th>
                     </tr>
@@ -101,21 +102,31 @@
                     <template v-for="(ticket, i) in dayReportData">
                         <tr :key="ticket.loadcompany_name">
                             <td v-if="isNeedAddManager">{{ticket.logistperson_surname}} {{ticket.logistperson_name}} {{ticket.logistperson_patronymic}}</td>
+                            <!-- <vmd-dropdown :items="logists" title="title" label="Логист" v-model="report"></vmd-dropdown> -->
                             <td v-if="isNeedAddCompany">{{ticket.loadcompany_name}}</td>
                             <td v-if="isNeedAddFromRegion">{{ticket.loadpointstate_name}} {{ticket.localitieslocalityshort_type}} {{ticket.loadpoint_localityname}}</td>
                             <td v-if="isNeedAddCompany">{{ticket.unloadcompany_name}}</td>
                             <td v-if="isNeedAddDestinationRegion">{{ticket.unloadpointstate_name}} {{ticket.unlocalitieslocalityshort_type}} {{ticket.unloadpoint_localityname}}</td>
                             <td v-if="isNeedAddState">{{ticket.ticketsstatusesstatus_name}}</td>
+                            <td>{{ticket.volume}}</td>
                             <td>{{ticket.weight}}</td>
                             <td>{{ticket.closed_cost}}</td>
                         </tr>
                     </template>
-                    <!--<tr>-->
-                        <!--<td style="text-align: right; font-weight: 500">ИТОГО:</td>-->
-                        <!--<td style="text-align: right; font-weight: 500">{{ dayReportSum('weight_sum') }}</td>-->
-                        <!--<td style="text-align: right; font-weight: 500">{{ dayReportSum('volume_sum') }}</td>-->
-                        <!--<td style="text-align: right; font-weight: 500">{{ dayReportSum('count_ttl') }}</td>-->
-                    <!--</tr>-->
+                    <tr>
+                        <td v-if="isNeedAddManager"></td>
+                        <td v-if="isNeedAddCompany"></td>
+                        <td v-if="isNeedAddFromRegion"></td>
+                        <td v-if="isNeedAddCompany"></td>
+                        <td v-if="isNeedAddDestinationRegion"></td>
+                        <td v-if="isNeedAddState"></td>
+
+                        <!-- <td style="text-align: right; font-weight: 500">ИТОГО:</td> -->
+                        <td style="text-align: right; font-weight: 500">{{ dayReportSum('weight') }}</td>
+                        <td style="text-align: right; font-weight: 500">{{ dayReportSum('volume') }}</td>
+                        <td style="text-align: right; font-weight: 500">{{ dayReportSum('closed_cost') }}</td>
+                        <!-- <td style="text-align: right; font-weight: 500">{{ dayReportSum('count') }}</td> -->
+                    </tr>
                     </tbody>
                 </table>
 
@@ -132,7 +143,7 @@
                 reportsList: [
                     {title: 'Отчет за период', name: 'dayReport'}
                 ],
-                managers: [],
+                logists: [],
                 dayReportDate: '',
                 dayReportDateEnd: '',
                 dayReportData: null,
@@ -145,27 +156,6 @@
                 isNeedUseArchive: false,
             },
 //            watch: {
-//                dayReportDate: function (newVal) {
-//
-////                    if (this.dayReportDateEnd === ''){
-////                        let err = 'Нужно заполнить дату окончания';
-////                        this.errors.push(err);
-////                        alert(err);
-////                        return;
-////                    }
-////                    else if (Date.parse(this.dayReportDate) > Date.parse(this.dayReportDateEnd)){
-////                        let err = 'Дата окончания должна быть позже даты начала';
-////                        this.errors.push(err);
-////                        alert(err);
-////                        return;
-////                    }
-//                    socket.emit('command', {
-//                        name: 'getReport_dayReport',
-//                        data: {
-//                            date: newVal
-//                        }
-//                    })
-//                }
 //                 dayReportDate: function (newVal) {
 //                     if (dayReportDateEnd !== ''){
 //                         socket.emit('command', {
@@ -180,10 +170,10 @@
             created: function () {
                 var self = this;
                 socket.on('data', function (data) {
-                    if (data.name === 'getReport_dayReport') {
+                    if (data.name === 'getReport_periodReport') {
                         self.dayReportData = data.data;
 
-                        self.managers = self.dayReportData.map(function(obj)
+                        self.logists = self.dayReportData.map(function(obj)
                             {
                                 return { sname: obj.logistperson_surname, name: obj.logistperson_name, pname: obj.logistperson_patronymic }
                             });
@@ -209,6 +199,7 @@
                     })
                 },
                 dayReportSum: function (item) {
+                    if (item === 'count') return this.dayReportData.length;
                     var sum = 0;
                     if (this.dayReportData) {
                         for (var key in this.dayReportData) {

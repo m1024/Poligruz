@@ -12467,3 +12467,1468 @@ WHERE      t.creation_datetime > '2018-10-01 00:00:00 +3:00'
 WHERE      t.creation_datetime > '2018-10-01 00:00:00 +3:00'
       AND t.creation_datetime < '2018-10-31 23:59:59 +3:00'
 2018-10-19T16:23:29.577Z [DEBUG] messages: Send data: getReport_dayReport. To: CHN1eFEMuep-eIE1AAAd
+2018-10-22T10:43:20.515Z [DEBUG] db: DB query: SELECT * FROM states ORDER BY state_name
+2018-10-22T10:43:20.533Z [DEBUG] db: DB query: SELECT * FROM localities ORDER BY locality_type
+2018-10-22T10:43:20.535Z [DEBUG] db: DB query: SELECT * FROM load_types ORDER BY load_type_id
+2018-10-22T10:43:20.536Z [DEBUG] db: DB query: SELECT * FROM pages         ORDER BY page_id ASC;
+2018-10-22T10:43:21.592Z [DEBUG] db: DB query: SELECT *, permissions.description FROM permissions            INNER JOIN pages ON permissions.owner_page_id = pages.page_id        ORDER BY pages.page_id;
+2018-10-22T10:43:27.331Z [DEBUG] io: Client connected:  wWhkVcssTGTVkGelAAAA
+2018-10-22T10:43:33.324Z [DEBUG] commands: Command: logon. From: wWhkVcssTGTVkGelAAAA
+2018-10-22T10:43:33.325Z [DEBUG] db: DB query: SELECT * FROM users WHERE login = 'admin' AND password_hash = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918' AND enable = TRUE;
+2018-10-22T10:43:33.371Z [DEBUG] db: DB query: SELECT * FROM persons WHERE person_id=1;
+2018-10-22T10:43:33.384Z [DEBUG] commands: Logon granted for: admin. From: wWhkVcssTGTVkGelAAAA
+2018-10-22T10:43:33.385Z [DEBUG] users: Add user: admin, SessionID: 1SjLqB42xLr2VFI1QBkTGvNmhJZYhabz
+2018-10-22T10:43:33.386Z [INFO]  users: User admin was added
+2018-10-22T10:43:33.388Z [DEBUG] messages: Send command: logon. To: wWhkVcssTGTVkGelAAAA
+2018-10-22T10:43:33.413Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T10:43:33.435Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/';
+2018-10-22T10:43:33.436Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/' AND users.user_id=1;
+2018-10-22T10:43:33.438Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T10:43:33.549Z [DEBUG] io: Client connected:  8k-yuNwOoxkjkFjMAAAB
+2018-10-22T10:43:38.520Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T10:43:38.522Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/reports';
+2018-10-22T10:43:38.523Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/reports' AND users.user_id=1;
+2018-10-22T10:43:38.525Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T10:43:38.601Z [DEBUG] io: Client connected:  CAS4tTJV-cSHIX7QAAAC
+2018-10-22T10:44:13.536Z [DEBUG] commands: Command: getReport_periodReport. From: CAS4tTJV-cSHIX7QAAAC
+2018-10-22T10:44:13.537Z [DEBUG] db: DB query: SELECT COUNT(*)             FROM commands                 INNER JOIN permissions ON commands.permission_id = permissions.permission_id                 INNER JOIN groups_permissions ON permissions.permission_id = groups_permissions.permission_id                 INNER JOIN groups ON groups_permissions.group_id = groups.group_id                 INNER JOIN users_groups ON groups.group_id = users_groups.group_id                 INNER JOIN users ON users.user_id = users_groups.user_id             WHERE                 commands.name = 'getReport_periodReport'                 AND users.login = 'admin';
+2018-10-22T10:44:13.585Z [DEBUG] commands: Granted command  getReport_periodReport  for user admin
+2018-10-22T10:44:13.590Z [DEBUG] db: DB query: SELECT 	
+	loadpointState.loadpointState_name,
+	loadpointLocalities.localitiesLocalityShort_type,
+	loadpoint.loadpoint_localityname,
+	unloadpointState.unloadpointState_name,
+	unloadpointLocalities.unlocalitiesLocalityShort_type,
+	unloadpoint.unloadpoint_localityname,
+	ticketsStatuses.ticketsStatusesStatus_name,
+	loadCompany.loadCompany_name,
+	unloadCompany.unloadCompany_name,
+	logistPerson.logistPerson_surname,
+	logistPerson.logistPerson_name,
+	logistPerson.logistPerson_patronymic,
+	t.weight,
+	t.volume,
+	t.closed_cost
+	FROM tickets AS t
+			 /*следующие 3 join подгружают местоположение места погрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as loadpoint_id,
+				 	points.state_id as loadpoint_stateid,
+				 	points.locality_id as loadpoint_localityid,
+				 	points.locality_name as loadpoint_localityname
+				 from points
+			 ) as loadpoint on t.load_point_id = loadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as loadpointState_id,
+				 	states.state_name as loadpointState_name
+				 from
+				 	states
+			 ) as loadpointState on loadpoint_stateid = loadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as localitiesLocality_id,
+				 	localities.locality_short_type as localitiesLocalityShort_type
+				from
+				 	localities
+			 ) as loadpointLocalities on loadpoint_localityid = localitiesLocality_id
+			/*следующие 3 join подгружают местоположение места выгрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as unloadpoint_id,
+				 	points.state_id as unloadpoint_stateid,
+				 	points.locality_id as unloadpoint_localityid,
+				 	points.locality_name as unloadpoint_localityname
+				 from points
+			 ) as unloadpoint on t.unload_point_id = unloadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as unloadpointState_id,
+				 	states.state_name as unloadpointState_name
+				 from
+				 	states
+			 ) as unloadpointState on unloadpoint_stateid = unloadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as unlocalitiesLocality_id,
+				 	localities.locality_short_type as unlocalitiesLocalityShort_type
+				from
+				 	localities
+			 ) as unloadpointLocalities on unloadpoint_localityid = unlocalitiesLocality_id
+			 /* подгружаем словесное описание статуса заявки */
+			 left join(
+			 	select
+					tickets_statuses.ticket_status_id as ticketsStatusesStatus_id,
+				 	tickets_statuses.ticket_status_name as ticketsStatusesStatus_name
+				from tickets_statuses
+			 ) as ticketsStatuses on t.status_id = ticketsStatusesStatus_id
+			 /* подгружаем название компании - погрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as loadCompany_id,
+				 	organizations.name as loadCompany_name
+				from organizations
+			 ) as loadCompany on t.load_organization_id = loadCompany_id
+			 /* подгружаем название компании - выгрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as unloadCompany_id,
+				 	organizations.name as unloadCompany_name
+				from organizations
+			 ) as unloadCompany on t.unload_organization_id = unloadCompany_id
+			 /* подгружаем имя логиста */
+			 left join(
+				 select
+				 	persons.person_id as logistPerson_id,
+				 	persons.name as logistPerson_name,
+				 	persons.surname as logistPerson_surname,
+				 	persons.patronymic as logistPerson_patronymic
+				 from persons
+			 ) as logistPerson on t.logist_person_id = logistPerson_id
+WHERE t.status_id IN (1,2,3,4) AND      t.creation_datetime > '2018-10-01 00:00:00 +3:00'
+      AND t.creation_datetime < '2018-10-31 23:59:59 +3:00'
+2018-10-22T10:44:13.647Z [DEBUG] messages: Send data: getReport_dayReport. To: CAS4tTJV-cSHIX7QAAAC
+2018-10-22T10:44:20.177Z [DEBUG] commands: Command: getReport_periodReport. From: CAS4tTJV-cSHIX7QAAAC
+2018-10-22T10:44:20.178Z [DEBUG] db: DB query: SELECT COUNT(*)             FROM commands                 INNER JOIN permissions ON commands.permission_id = permissions.permission_id                 INNER JOIN groups_permissions ON permissions.permission_id = groups_permissions.permission_id                 INNER JOIN groups ON groups_permissions.group_id = groups.group_id                 INNER JOIN users_groups ON groups.group_id = users_groups.group_id                 INNER JOIN users ON users.user_id = users_groups.user_id             WHERE                 commands.name = 'getReport_periodReport'                 AND users.login = 'admin';
+2018-10-22T10:44:20.180Z [DEBUG] commands: Granted command  getReport_periodReport  for user admin
+2018-10-22T10:44:20.181Z [DEBUG] db: DB query: SELECT 	
+	loadpointState.loadpointState_name,
+	loadpointLocalities.localitiesLocalityShort_type,
+	loadpoint.loadpoint_localityname,
+	unloadpointState.unloadpointState_name,
+	unloadpointLocalities.unlocalitiesLocalityShort_type,
+	unloadpoint.unloadpoint_localityname,
+	ticketsStatuses.ticketsStatusesStatus_name,
+	loadCompany.loadCompany_name,
+	unloadCompany.unloadCompany_name,
+	logistPerson.logistPerson_surname,
+	logistPerson.logistPerson_name,
+	logistPerson.logistPerson_patronymic,
+	t.weight,
+	t.volume,
+	t.closed_cost
+	FROM tickets AS t
+			 /*следующие 3 join подгружают местоположение места погрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as loadpoint_id,
+				 	points.state_id as loadpoint_stateid,
+				 	points.locality_id as loadpoint_localityid,
+				 	points.locality_name as loadpoint_localityname
+				 from points
+			 ) as loadpoint on t.load_point_id = loadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as loadpointState_id,
+				 	states.state_name as loadpointState_name
+				 from
+				 	states
+			 ) as loadpointState on loadpoint_stateid = loadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as localitiesLocality_id,
+				 	localities.locality_short_type as localitiesLocalityShort_type
+				from
+				 	localities
+			 ) as loadpointLocalities on loadpoint_localityid = localitiesLocality_id
+			/*следующие 3 join подгружают местоположение места выгрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as unloadpoint_id,
+				 	points.state_id as unloadpoint_stateid,
+				 	points.locality_id as unloadpoint_localityid,
+				 	points.locality_name as unloadpoint_localityname
+				 from points
+			 ) as unloadpoint on t.unload_point_id = unloadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as unloadpointState_id,
+				 	states.state_name as unloadpointState_name
+				 from
+				 	states
+			 ) as unloadpointState on unloadpoint_stateid = unloadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as unlocalitiesLocality_id,
+				 	localities.locality_short_type as unlocalitiesLocalityShort_type
+				from
+				 	localities
+			 ) as unloadpointLocalities on unloadpoint_localityid = unlocalitiesLocality_id
+			 /* подгружаем словесное описание статуса заявки */
+			 left join(
+			 	select
+					tickets_statuses.ticket_status_id as ticketsStatusesStatus_id,
+				 	tickets_statuses.ticket_status_name as ticketsStatusesStatus_name
+				from tickets_statuses
+			 ) as ticketsStatuses on t.status_id = ticketsStatusesStatus_id
+			 /* подгружаем название компании - погрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as loadCompany_id,
+				 	organizations.name as loadCompany_name
+				from organizations
+			 ) as loadCompany on t.load_organization_id = loadCompany_id
+			 /* подгружаем название компании - выгрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as unloadCompany_id,
+				 	organizations.name as unloadCompany_name
+				from organizations
+			 ) as unloadCompany on t.unload_organization_id = unloadCompany_id
+			 /* подгружаем имя логиста */
+			 left join(
+				 select
+				 	persons.person_id as logistPerson_id,
+				 	persons.name as logistPerson_name,
+				 	persons.surname as logistPerson_surname,
+				 	persons.patronymic as logistPerson_patronymic
+				 from persons
+			 ) as logistPerson on t.logist_person_id = logistPerson_id
+WHERE t.status_id IN (1,2,3,4) AND      t.creation_datetime > '2018-10-01 00:00:00 +3:00'
+      AND t.creation_datetime < '2018-10-31 23:59:59 +3:00'
+2018-10-22T10:44:20.184Z [DEBUG] messages: Send data: getReport_dayReport. To: CAS4tTJV-cSHIX7QAAAC
+2018-10-22T11:01:26.539Z [DEBUG] io: Client connected:  cJxXni_ezFixLJn6AAAD
+2018-10-22T11:01:32.622Z [DEBUG] commands: Command: logon. From: cJxXni_ezFixLJn6AAAD
+2018-10-22T11:01:32.623Z [DEBUG] db: DB query: SELECT * FROM users WHERE login = 'admin' AND password_hash = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918' AND enable = TRUE;
+2018-10-22T11:01:32.685Z [DEBUG] db: DB query: SELECT * FROM persons WHERE person_id=1;
+2018-10-22T11:01:32.695Z [DEBUG] commands: Logon granted for: admin. From: cJxXni_ezFixLJn6AAAD
+2018-10-22T11:01:32.696Z [DEBUG] users: Add user: admin, SessionID: n0G7wXnW2d2H3DI1vrS46IyI4ebnwBsJ
+2018-10-22T11:01:32.697Z [INFO]  users: User admin was added
+2018-10-22T11:01:32.697Z [DEBUG] messages: Send command: logon. To: cJxXni_ezFixLJn6AAAD
+2018-10-22T11:01:32.707Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T11:01:32.727Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/';
+2018-10-22T11:01:32.737Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/' AND users.user_id=1;
+2018-10-22T11:01:32.739Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T11:01:32.820Z [DEBUG] io: Client connected:  LB4co4OhWzIEVHdkAAAE
+2018-10-22T11:01:36.235Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T11:01:36.237Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/reports';
+2018-10-22T11:01:36.238Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/reports' AND users.user_id=1;
+2018-10-22T11:01:36.240Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T11:01:36.338Z [DEBUG] io: Client connected:  rWgAQgTeKeUX8TS4AAAF
+2018-10-22T11:01:41.340Z [DEBUG] commands: Command: getReport_periodReport. From: rWgAQgTeKeUX8TS4AAAF
+2018-10-22T11:01:41.341Z [DEBUG] db: DB query: SELECT COUNT(*)             FROM commands                 INNER JOIN permissions ON commands.permission_id = permissions.permission_id                 INNER JOIN groups_permissions ON permissions.permission_id = groups_permissions.permission_id                 INNER JOIN groups ON groups_permissions.group_id = groups.group_id                 INNER JOIN users_groups ON groups.group_id = users_groups.group_id                 INNER JOIN users ON users.user_id = users_groups.user_id             WHERE                 commands.name = 'getReport_periodReport'                 AND users.login = 'admin';
+2018-10-22T11:01:41.366Z [DEBUG] commands: Granted command  getReport_periodReport  for user admin
+2018-10-22T11:01:41.366Z [DEBUG] db: DB query: SELECT 	
+	loadpointState.loadpointState_name,
+	loadpointLocalities.localitiesLocalityShort_type,
+	loadpoint.loadpoint_localityname,
+	unloadpointState.unloadpointState_name,
+	unloadpointLocalities.unlocalitiesLocalityShort_type,
+	unloadpoint.unloadpoint_localityname,
+	ticketsStatuses.ticketsStatusesStatus_name,
+	loadCompany.loadCompany_name,
+	unloadCompany.unloadCompany_name,
+	logistPerson.logistPerson_surname,
+	logistPerson.logistPerson_name,
+	logistPerson.logistPerson_patronymic,
+	t.weight,
+	t.volume,
+	t.closed_cost
+	FROM tickets AS t
+			 /*следующие 3 join подгружают местоположение места погрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as loadpoint_id,
+				 	points.state_id as loadpoint_stateid,
+				 	points.locality_id as loadpoint_localityid,
+				 	points.locality_name as loadpoint_localityname
+				 from points
+			 ) as loadpoint on t.load_point_id = loadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as loadpointState_id,
+				 	states.state_name as loadpointState_name
+				 from
+				 	states
+			 ) as loadpointState on loadpoint_stateid = loadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as localitiesLocality_id,
+				 	localities.locality_short_type as localitiesLocalityShort_type
+				from
+				 	localities
+			 ) as loadpointLocalities on loadpoint_localityid = localitiesLocality_id
+			/*следующие 3 join подгружают местоположение места выгрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as unloadpoint_id,
+				 	points.state_id as unloadpoint_stateid,
+				 	points.locality_id as unloadpoint_localityid,
+				 	points.locality_name as unloadpoint_localityname
+				 from points
+			 ) as unloadpoint on t.unload_point_id = unloadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as unloadpointState_id,
+				 	states.state_name as unloadpointState_name
+				 from
+				 	states
+			 ) as unloadpointState on unloadpoint_stateid = unloadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as unlocalitiesLocality_id,
+				 	localities.locality_short_type as unlocalitiesLocalityShort_type
+				from
+				 	localities
+			 ) as unloadpointLocalities on unloadpoint_localityid = unlocalitiesLocality_id
+			 /* подгружаем словесное описание статуса заявки */
+			 left join(
+			 	select
+					tickets_statuses.ticket_status_id as ticketsStatusesStatus_id,
+				 	tickets_statuses.ticket_status_name as ticketsStatusesStatus_name
+				from tickets_statuses
+			 ) as ticketsStatuses on t.status_id = ticketsStatusesStatus_id
+			 /* подгружаем название компании - погрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as loadCompany_id,
+				 	organizations.name as loadCompany_name
+				from organizations
+			 ) as loadCompany on t.load_organization_id = loadCompany_id
+			 /* подгружаем название компании - выгрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as unloadCompany_id,
+				 	organizations.name as unloadCompany_name
+				from organizations
+			 ) as unloadCompany on t.unload_organization_id = unloadCompany_id
+			 /* подгружаем имя логиста */
+			 left join(
+				 select
+				 	persons.person_id as logistPerson_id,
+				 	persons.name as logistPerson_name,
+				 	persons.surname as logistPerson_surname,
+				 	persons.patronymic as logistPerson_patronymic
+				 from persons
+			 ) as logistPerson on t.logist_person_id = logistPerson_id
+WHERE t.status_id IN (1,2,3,4) AND      t.creation_datetime > '2018-10-01 00:00:00 +3:00'
+      AND t.creation_datetime < '2018-10-31 23:59:59 +3:00'
+2018-10-22T11:01:41.404Z [DEBUG] messages: Send data: getReport_dayReport. To: rWgAQgTeKeUX8TS4AAAF
+2018-10-22T11:04:00.067Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T11:04:00.102Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/reports';
+2018-10-22T11:04:00.105Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/reports' AND users.user_id=1;
+2018-10-22T11:04:00.107Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T11:04:00.233Z [DEBUG] io: Client connected:  sGfS6f0NN_9Wyi8EAAAG
+2018-10-22T11:04:05.414Z [DEBUG] commands: Command: getReport_periodReport. From: sGfS6f0NN_9Wyi8EAAAG
+2018-10-22T11:04:05.414Z [DEBUG] db: DB query: SELECT COUNT(*)             FROM commands                 INNER JOIN permissions ON commands.permission_id = permissions.permission_id                 INNER JOIN groups_permissions ON permissions.permission_id = groups_permissions.permission_id                 INNER JOIN groups ON groups_permissions.group_id = groups.group_id                 INNER JOIN users_groups ON groups.group_id = users_groups.group_id                 INNER JOIN users ON users.user_id = users_groups.user_id             WHERE                 commands.name = 'getReport_periodReport'                 AND users.login = 'admin';
+2018-10-22T11:04:05.418Z [DEBUG] commands: Granted command  getReport_periodReport  for user admin
+2018-10-22T11:04:05.419Z [DEBUG] db: DB query: SELECT 	
+	loadpointState.loadpointState_name,
+	loadpointLocalities.localitiesLocalityShort_type,
+	loadpoint.loadpoint_localityname,
+	unloadpointState.unloadpointState_name,
+	unloadpointLocalities.unlocalitiesLocalityShort_type,
+	unloadpoint.unloadpoint_localityname,
+	ticketsStatuses.ticketsStatusesStatus_name,
+	loadCompany.loadCompany_name,
+	unloadCompany.unloadCompany_name,
+	logistPerson.logistPerson_surname,
+	logistPerson.logistPerson_name,
+	logistPerson.logistPerson_patronymic,
+	t.weight,
+	t.volume,
+	t.closed_cost
+	FROM tickets AS t
+			 /*следующие 3 join подгружают местоположение места погрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as loadpoint_id,
+				 	points.state_id as loadpoint_stateid,
+				 	points.locality_id as loadpoint_localityid,
+				 	points.locality_name as loadpoint_localityname
+				 from points
+			 ) as loadpoint on t.load_point_id = loadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as loadpointState_id,
+				 	states.state_name as loadpointState_name
+				 from
+				 	states
+			 ) as loadpointState on loadpoint_stateid = loadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as localitiesLocality_id,
+				 	localities.locality_short_type as localitiesLocalityShort_type
+				from
+				 	localities
+			 ) as loadpointLocalities on loadpoint_localityid = localitiesLocality_id
+			/*следующие 3 join подгружают местоположение места выгрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as unloadpoint_id,
+				 	points.state_id as unloadpoint_stateid,
+				 	points.locality_id as unloadpoint_localityid,
+				 	points.locality_name as unloadpoint_localityname
+				 from points
+			 ) as unloadpoint on t.unload_point_id = unloadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as unloadpointState_id,
+				 	states.state_name as unloadpointState_name
+				 from
+				 	states
+			 ) as unloadpointState on unloadpoint_stateid = unloadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as unlocalitiesLocality_id,
+				 	localities.locality_short_type as unlocalitiesLocalityShort_type
+				from
+				 	localities
+			 ) as unloadpointLocalities on unloadpoint_localityid = unlocalitiesLocality_id
+			 /* подгружаем словесное описание статуса заявки */
+			 left join(
+			 	select
+					tickets_statuses.ticket_status_id as ticketsStatusesStatus_id,
+				 	tickets_statuses.ticket_status_name as ticketsStatusesStatus_name
+				from tickets_statuses
+			 ) as ticketsStatuses on t.status_id = ticketsStatusesStatus_id
+			 /* подгружаем название компании - погрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as loadCompany_id,
+				 	organizations.name as loadCompany_name
+				from organizations
+			 ) as loadCompany on t.load_organization_id = loadCompany_id
+			 /* подгружаем название компании - выгрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as unloadCompany_id,
+				 	organizations.name as unloadCompany_name
+				from organizations
+			 ) as unloadCompany on t.unload_organization_id = unloadCompany_id
+			 /* подгружаем имя логиста */
+			 left join(
+				 select
+				 	persons.person_id as logistPerson_id,
+				 	persons.name as logistPerson_name,
+				 	persons.surname as logistPerson_surname,
+				 	persons.patronymic as logistPerson_patronymic
+				 from persons
+			 ) as logistPerson on t.logist_person_id = logistPerson_id
+WHERE t.status_id IN (1,2,3,4) AND      t.creation_datetime > '2018-10-01 00:00:00 +3:00'
+      AND t.creation_datetime < '2018-10-31 23:59:59 +3:00'
+2018-10-22T11:04:05.424Z [DEBUG] messages: Send data: getReport_dayReport. To: sGfS6f0NN_9Wyi8EAAAG
+2018-10-22T11:05:52.710Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T11:05:52.733Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/reports';
+2018-10-22T11:05:52.735Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/reports' AND users.user_id=1;
+2018-10-22T11:05:52.737Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T11:05:52.864Z [DEBUG] io: Client connected:  3Bo1XtyBLYXvLD-cAAAH
+2018-10-22T11:05:58.845Z [DEBUG] commands: Command: getReport_periodReport. From: 3Bo1XtyBLYXvLD-cAAAH
+2018-10-22T11:05:58.846Z [DEBUG] db: DB query: SELECT COUNT(*)             FROM commands                 INNER JOIN permissions ON commands.permission_id = permissions.permission_id                 INNER JOIN groups_permissions ON permissions.permission_id = groups_permissions.permission_id                 INNER JOIN groups ON groups_permissions.group_id = groups.group_id                 INNER JOIN users_groups ON groups.group_id = users_groups.group_id                 INNER JOIN users ON users.user_id = users_groups.user_id             WHERE                 commands.name = 'getReport_periodReport'                 AND users.login = 'admin';
+2018-10-22T11:05:58.849Z [DEBUG] commands: Granted command  getReport_periodReport  for user admin
+2018-10-22T11:05:58.850Z [DEBUG] db: DB query: SELECT 	
+	loadpointState.loadpointState_name,
+	loadpointLocalities.localitiesLocalityShort_type,
+	loadpoint.loadpoint_localityname,
+	unloadpointState.unloadpointState_name,
+	unloadpointLocalities.unlocalitiesLocalityShort_type,
+	unloadpoint.unloadpoint_localityname,
+	ticketsStatuses.ticketsStatusesStatus_name,
+	loadCompany.loadCompany_name,
+	unloadCompany.unloadCompany_name,
+	logistPerson.logistPerson_surname,
+	logistPerson.logistPerson_name,
+	logistPerson.logistPerson_patronymic,
+	t.weight,
+	t.volume,
+	t.closed_cost
+	FROM tickets AS t
+			 /*следующие 3 join подгружают местоположение места погрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as loadpoint_id,
+				 	points.state_id as loadpoint_stateid,
+				 	points.locality_id as loadpoint_localityid,
+				 	points.locality_name as loadpoint_localityname
+				 from points
+			 ) as loadpoint on t.load_point_id = loadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as loadpointState_id,
+				 	states.state_name as loadpointState_name
+				 from
+				 	states
+			 ) as loadpointState on loadpoint_stateid = loadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as localitiesLocality_id,
+				 	localities.locality_short_type as localitiesLocalityShort_type
+				from
+				 	localities
+			 ) as loadpointLocalities on loadpoint_localityid = localitiesLocality_id
+			/*следующие 3 join подгружают местоположение места выгрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as unloadpoint_id,
+				 	points.state_id as unloadpoint_stateid,
+				 	points.locality_id as unloadpoint_localityid,
+				 	points.locality_name as unloadpoint_localityname
+				 from points
+			 ) as unloadpoint on t.unload_point_id = unloadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as unloadpointState_id,
+				 	states.state_name as unloadpointState_name
+				 from
+				 	states
+			 ) as unloadpointState on unloadpoint_stateid = unloadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as unlocalitiesLocality_id,
+				 	localities.locality_short_type as unlocalitiesLocalityShort_type
+				from
+				 	localities
+			 ) as unloadpointLocalities on unloadpoint_localityid = unlocalitiesLocality_id
+			 /* подгружаем словесное описание статуса заявки */
+			 left join(
+			 	select
+					tickets_statuses.ticket_status_id as ticketsStatusesStatus_id,
+				 	tickets_statuses.ticket_status_name as ticketsStatusesStatus_name
+				from tickets_statuses
+			 ) as ticketsStatuses on t.status_id = ticketsStatusesStatus_id
+			 /* подгружаем название компании - погрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as loadCompany_id,
+				 	organizations.name as loadCompany_name
+				from organizations
+			 ) as loadCompany on t.load_organization_id = loadCompany_id
+			 /* подгружаем название компании - выгрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as unloadCompany_id,
+				 	organizations.name as unloadCompany_name
+				from organizations
+			 ) as unloadCompany on t.unload_organization_id = unloadCompany_id
+			 /* подгружаем имя логиста */
+			 left join(
+				 select
+				 	persons.person_id as logistPerson_id,
+				 	persons.name as logistPerson_name,
+				 	persons.surname as logistPerson_surname,
+				 	persons.patronymic as logistPerson_patronymic
+				 from persons
+			 ) as logistPerson on t.logist_person_id = logistPerson_id
+WHERE t.status_id IN (1,2,3,4) AND      t.creation_datetime > '2018-10-01 00:00:00 +3:00'
+      AND t.creation_datetime < '2018-10-31 23:59:59 +3:00'
+2018-10-22T11:05:58.855Z [DEBUG] messages: Send data: getReport_dayReport. To: 3Bo1XtyBLYXvLD-cAAAH
+2018-10-22T11:08:13.355Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T11:08:13.379Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/reports';
+2018-10-22T11:08:13.382Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/reports' AND users.user_id=1;
+2018-10-22T11:08:13.384Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T11:08:13.516Z [DEBUG] io: Client connected:  Fn4ZegH-jpWOwulEAAAI
+2018-10-22T11:08:20.086Z [DEBUG] commands: Command: getReport_periodReport. From: Fn4ZegH-jpWOwulEAAAI
+2018-10-22T11:08:20.086Z [DEBUG] db: DB query: SELECT COUNT(*)             FROM commands                 INNER JOIN permissions ON commands.permission_id = permissions.permission_id                 INNER JOIN groups_permissions ON permissions.permission_id = groups_permissions.permission_id                 INNER JOIN groups ON groups_permissions.group_id = groups.group_id                 INNER JOIN users_groups ON groups.group_id = users_groups.group_id                 INNER JOIN users ON users.user_id = users_groups.user_id             WHERE                 commands.name = 'getReport_periodReport'                 AND users.login = 'admin';
+2018-10-22T11:08:20.089Z [DEBUG] commands: Granted command  getReport_periodReport  for user admin
+2018-10-22T11:08:20.090Z [DEBUG] db: DB query: SELECT 	
+	loadpointState.loadpointState_name,
+	loadpointLocalities.localitiesLocalityShort_type,
+	loadpoint.loadpoint_localityname,
+	unloadpointState.unloadpointState_name,
+	unloadpointLocalities.unlocalitiesLocalityShort_type,
+	unloadpoint.unloadpoint_localityname,
+	ticketsStatuses.ticketsStatusesStatus_name,
+	loadCompany.loadCompany_name,
+	unloadCompany.unloadCompany_name,
+	logistPerson.logistPerson_surname,
+	logistPerson.logistPerson_name,
+	logistPerson.logistPerson_patronymic,
+	t.weight,
+	t.volume,
+	t.closed_cost
+	FROM tickets AS t
+			 /*следующие 3 join подгружают местоположение места погрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as loadpoint_id,
+				 	points.state_id as loadpoint_stateid,
+				 	points.locality_id as loadpoint_localityid,
+				 	points.locality_name as loadpoint_localityname
+				 from points
+			 ) as loadpoint on t.load_point_id = loadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as loadpointState_id,
+				 	states.state_name as loadpointState_name
+				 from
+				 	states
+			 ) as loadpointState on loadpoint_stateid = loadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as localitiesLocality_id,
+				 	localities.locality_short_type as localitiesLocalityShort_type
+				from
+				 	localities
+			 ) as loadpointLocalities on loadpoint_localityid = localitiesLocality_id
+			/*следующие 3 join подгружают местоположение места выгрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as unloadpoint_id,
+				 	points.state_id as unloadpoint_stateid,
+				 	points.locality_id as unloadpoint_localityid,
+				 	points.locality_name as unloadpoint_localityname
+				 from points
+			 ) as unloadpoint on t.unload_point_id = unloadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as unloadpointState_id,
+				 	states.state_name as unloadpointState_name
+				 from
+				 	states
+			 ) as unloadpointState on unloadpoint_stateid = unloadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as unlocalitiesLocality_id,
+				 	localities.locality_short_type as unlocalitiesLocalityShort_type
+				from
+				 	localities
+			 ) as unloadpointLocalities on unloadpoint_localityid = unlocalitiesLocality_id
+			 /* подгружаем словесное описание статуса заявки */
+			 left join(
+			 	select
+					tickets_statuses.ticket_status_id as ticketsStatusesStatus_id,
+				 	tickets_statuses.ticket_status_name as ticketsStatusesStatus_name
+				from tickets_statuses
+			 ) as ticketsStatuses on t.status_id = ticketsStatusesStatus_id
+			 /* подгружаем название компании - погрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as loadCompany_id,
+				 	organizations.name as loadCompany_name
+				from organizations
+			 ) as loadCompany on t.load_organization_id = loadCompany_id
+			 /* подгружаем название компании - выгрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as unloadCompany_id,
+				 	organizations.name as unloadCompany_name
+				from organizations
+			 ) as unloadCompany on t.unload_organization_id = unloadCompany_id
+			 /* подгружаем имя логиста */
+			 left join(
+				 select
+				 	persons.person_id as logistPerson_id,
+				 	persons.name as logistPerson_name,
+				 	persons.surname as logistPerson_surname,
+				 	persons.patronymic as logistPerson_patronymic
+				 from persons
+			 ) as logistPerson on t.logist_person_id = logistPerson_id
+WHERE t.status_id IN (1,2,3,4) AND      t.creation_datetime > '2018-10-01 00:00:00 +3:00'
+      AND t.creation_datetime < '2018-10-31 23:59:59 +3:00'
+2018-10-22T11:08:20.116Z [DEBUG] messages: Send data: getReport_dayReport. To: Fn4ZegH-jpWOwulEAAAI
+2018-10-22T11:08:30.133Z [DEBUG] commands: Command: getReport_periodReport. From: Fn4ZegH-jpWOwulEAAAI
+2018-10-22T11:08:30.135Z [DEBUG] db: DB query: SELECT COUNT(*)             FROM commands                 INNER JOIN permissions ON commands.permission_id = permissions.permission_id                 INNER JOIN groups_permissions ON permissions.permission_id = groups_permissions.permission_id                 INNER JOIN groups ON groups_permissions.group_id = groups.group_id                 INNER JOIN users_groups ON groups.group_id = users_groups.group_id                 INNER JOIN users ON users.user_id = users_groups.user_id             WHERE                 commands.name = 'getReport_periodReport'                 AND users.login = 'admin';
+2018-10-22T11:08:30.160Z [DEBUG] commands: Granted command  getReport_periodReport  for user admin
+2018-10-22T11:08:30.161Z [DEBUG] db: DB query: SELECT 	
+	loadpointState.loadpointState_name,
+	loadpointLocalities.localitiesLocalityShort_type,
+	loadpoint.loadpoint_localityname,
+	unloadpointState.unloadpointState_name,
+	unloadpointLocalities.unlocalitiesLocalityShort_type,
+	unloadpoint.unloadpoint_localityname,
+	ticketsStatuses.ticketsStatusesStatus_name,
+	loadCompany.loadCompany_name,
+	unloadCompany.unloadCompany_name,
+	logistPerson.logistPerson_surname,
+	logistPerson.logistPerson_name,
+	logistPerson.logistPerson_patronymic,
+	t.weight,
+	t.volume,
+	t.closed_cost
+	FROM tickets AS t
+			 /*следующие 3 join подгружают местоположение места погрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as loadpoint_id,
+				 	points.state_id as loadpoint_stateid,
+				 	points.locality_id as loadpoint_localityid,
+				 	points.locality_name as loadpoint_localityname
+				 from points
+			 ) as loadpoint on t.load_point_id = loadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as loadpointState_id,
+				 	states.state_name as loadpointState_name
+				 from
+				 	states
+			 ) as loadpointState on loadpoint_stateid = loadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as localitiesLocality_id,
+				 	localities.locality_short_type as localitiesLocalityShort_type
+				from
+				 	localities
+			 ) as loadpointLocalities on loadpoint_localityid = localitiesLocality_id
+			/*следующие 3 join подгружают местоположение места выгрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as unloadpoint_id,
+				 	points.state_id as unloadpoint_stateid,
+				 	points.locality_id as unloadpoint_localityid,
+				 	points.locality_name as unloadpoint_localityname
+				 from points
+			 ) as unloadpoint on t.unload_point_id = unloadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as unloadpointState_id,
+				 	states.state_name as unloadpointState_name
+				 from
+				 	states
+			 ) as unloadpointState on unloadpoint_stateid = unloadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as unlocalitiesLocality_id,
+				 	localities.locality_short_type as unlocalitiesLocalityShort_type
+				from
+				 	localities
+			 ) as unloadpointLocalities on unloadpoint_localityid = unlocalitiesLocality_id
+			 /* подгружаем словесное описание статуса заявки */
+			 left join(
+			 	select
+					tickets_statuses.ticket_status_id as ticketsStatusesStatus_id,
+				 	tickets_statuses.ticket_status_name as ticketsStatusesStatus_name
+				from tickets_statuses
+			 ) as ticketsStatuses on t.status_id = ticketsStatusesStatus_id
+			 /* подгружаем название компании - погрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as loadCompany_id,
+				 	organizations.name as loadCompany_name
+				from organizations
+			 ) as loadCompany on t.load_organization_id = loadCompany_id
+			 /* подгружаем название компании - выгрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as unloadCompany_id,
+				 	organizations.name as unloadCompany_name
+				from organizations
+			 ) as unloadCompany on t.unload_organization_id = unloadCompany_id
+			 /* подгружаем имя логиста */
+			 left join(
+				 select
+				 	persons.person_id as logistPerson_id,
+				 	persons.name as logistPerson_name,
+				 	persons.surname as logistPerson_surname,
+				 	persons.patronymic as logistPerson_patronymic
+				 from persons
+			 ) as logistPerson on t.logist_person_id = logistPerson_id
+WHERE      t.creation_datetime > '2018-10-01 00:00:00 +3:00'
+      AND t.creation_datetime < '2018-10-31 23:59:59 +3:00'
+2018-10-22T11:08:30.166Z [DEBUG] messages: Send data: getReport_dayReport. To: Fn4ZegH-jpWOwulEAAAI
+2018-10-22T11:09:02.260Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T11:09:02.284Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/reports';
+2018-10-22T11:09:02.286Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/reports' AND users.user_id=1;
+2018-10-22T11:09:02.288Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T11:09:02.418Z [DEBUG] io: Client connected:  VPjvF_iBx3_v7CjfAAAJ
+2018-10-22T11:09:07.782Z [DEBUG] commands: Command: getReport_periodReport. From: VPjvF_iBx3_v7CjfAAAJ
+2018-10-22T11:09:07.782Z [DEBUG] db: DB query: SELECT COUNT(*)             FROM commands                 INNER JOIN permissions ON commands.permission_id = permissions.permission_id                 INNER JOIN groups_permissions ON permissions.permission_id = groups_permissions.permission_id                 INNER JOIN groups ON groups_permissions.group_id = groups.group_id                 INNER JOIN users_groups ON groups.group_id = users_groups.group_id                 INNER JOIN users ON users.user_id = users_groups.user_id             WHERE                 commands.name = 'getReport_periodReport'                 AND users.login = 'admin';
+2018-10-22T11:09:07.785Z [DEBUG] commands: Granted command  getReport_periodReport  for user admin
+2018-10-22T11:09:07.786Z [DEBUG] db: DB query: SELECT 	
+	loadpointState.loadpointState_name,
+	loadpointLocalities.localitiesLocalityShort_type,
+	loadpoint.loadpoint_localityname,
+	unloadpointState.unloadpointState_name,
+	unloadpointLocalities.unlocalitiesLocalityShort_type,
+	unloadpoint.unloadpoint_localityname,
+	ticketsStatuses.ticketsStatusesStatus_name,
+	loadCompany.loadCompany_name,
+	unloadCompany.unloadCompany_name,
+	logistPerson.logistPerson_surname,
+	logistPerson.logistPerson_name,
+	logistPerson.logistPerson_patronymic,
+	t.weight,
+	t.volume,
+	t.closed_cost
+	FROM tickets AS t
+			 /*следующие 3 join подгружают местоположение места погрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as loadpoint_id,
+				 	points.state_id as loadpoint_stateid,
+				 	points.locality_id as loadpoint_localityid,
+				 	points.locality_name as loadpoint_localityname
+				 from points
+			 ) as loadpoint on t.load_point_id = loadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as loadpointState_id,
+				 	states.state_name as loadpointState_name
+				 from
+				 	states
+			 ) as loadpointState on loadpoint_stateid = loadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as localitiesLocality_id,
+				 	localities.locality_short_type as localitiesLocalityShort_type
+				from
+				 	localities
+			 ) as loadpointLocalities on loadpoint_localityid = localitiesLocality_id
+			/*следующие 3 join подгружают местоположение места выгрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as unloadpoint_id,
+				 	points.state_id as unloadpoint_stateid,
+				 	points.locality_id as unloadpoint_localityid,
+				 	points.locality_name as unloadpoint_localityname
+				 from points
+			 ) as unloadpoint on t.unload_point_id = unloadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as unloadpointState_id,
+				 	states.state_name as unloadpointState_name
+				 from
+				 	states
+			 ) as unloadpointState on unloadpoint_stateid = unloadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as unlocalitiesLocality_id,
+				 	localities.locality_short_type as unlocalitiesLocalityShort_type
+				from
+				 	localities
+			 ) as unloadpointLocalities on unloadpoint_localityid = unlocalitiesLocality_id
+			 /* подгружаем словесное описание статуса заявки */
+			 left join(
+			 	select
+					tickets_statuses.ticket_status_id as ticketsStatusesStatus_id,
+				 	tickets_statuses.ticket_status_name as ticketsStatusesStatus_name
+				from tickets_statuses
+			 ) as ticketsStatuses on t.status_id = ticketsStatusesStatus_id
+			 /* подгружаем название компании - погрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as loadCompany_id,
+				 	organizations.name as loadCompany_name
+				from organizations
+			 ) as loadCompany on t.load_organization_id = loadCompany_id
+			 /* подгружаем название компании - выгрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as unloadCompany_id,
+				 	organizations.name as unloadCompany_name
+				from organizations
+			 ) as unloadCompany on t.unload_organization_id = unloadCompany_id
+			 /* подгружаем имя логиста */
+			 left join(
+				 select
+				 	persons.person_id as logistPerson_id,
+				 	persons.name as logistPerson_name,
+				 	persons.surname as logistPerson_surname,
+				 	persons.patronymic as logistPerson_patronymic
+				 from persons
+			 ) as logistPerson on t.logist_person_id = logistPerson_id
+WHERE t.status_id IN (1,2,3,4) AND      t.creation_datetime > '2018-10-01 00:00:00 +3:00'
+      AND t.creation_datetime < '2018-10-31 23:59:59 +3:00'
+2018-10-22T11:09:07.792Z [DEBUG] messages: Send data: getReport_dayReport. To: VPjvF_iBx3_v7CjfAAAJ
+2018-10-22T11:09:11.661Z [DEBUG] commands: Command: getReport_periodReport. From: VPjvF_iBx3_v7CjfAAAJ
+2018-10-22T11:09:11.662Z [DEBUG] db: DB query: SELECT COUNT(*)             FROM commands                 INNER JOIN permissions ON commands.permission_id = permissions.permission_id                 INNER JOIN groups_permissions ON permissions.permission_id = groups_permissions.permission_id                 INNER JOIN groups ON groups_permissions.group_id = groups.group_id                 INNER JOIN users_groups ON groups.group_id = users_groups.group_id                 INNER JOIN users ON users.user_id = users_groups.user_id             WHERE                 commands.name = 'getReport_periodReport'                 AND users.login = 'admin';
+2018-10-22T11:09:11.664Z [DEBUG] commands: Granted command  getReport_periodReport  for user admin
+2018-10-22T11:09:11.665Z [DEBUG] db: DB query: SELECT 	
+	loadpointState.loadpointState_name,
+	loadpointLocalities.localitiesLocalityShort_type,
+	loadpoint.loadpoint_localityname,
+	unloadpointState.unloadpointState_name,
+	unloadpointLocalities.unlocalitiesLocalityShort_type,
+	unloadpoint.unloadpoint_localityname,
+	ticketsStatuses.ticketsStatusesStatus_name,
+	loadCompany.loadCompany_name,
+	unloadCompany.unloadCompany_name,
+	logistPerson.logistPerson_surname,
+	logistPerson.logistPerson_name,
+	logistPerson.logistPerson_patronymic,
+	t.weight,
+	t.volume,
+	t.closed_cost
+	FROM tickets AS t
+			 /*следующие 3 join подгружают местоположение места погрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as loadpoint_id,
+				 	points.state_id as loadpoint_stateid,
+				 	points.locality_id as loadpoint_localityid,
+				 	points.locality_name as loadpoint_localityname
+				 from points
+			 ) as loadpoint on t.load_point_id = loadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as loadpointState_id,
+				 	states.state_name as loadpointState_name
+				 from
+				 	states
+			 ) as loadpointState on loadpoint_stateid = loadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as localitiesLocality_id,
+				 	localities.locality_short_type as localitiesLocalityShort_type
+				from
+				 	localities
+			 ) as loadpointLocalities on loadpoint_localityid = localitiesLocality_id
+			/*следующие 3 join подгружают местоположение места выгрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as unloadpoint_id,
+				 	points.state_id as unloadpoint_stateid,
+				 	points.locality_id as unloadpoint_localityid,
+				 	points.locality_name as unloadpoint_localityname
+				 from points
+			 ) as unloadpoint on t.unload_point_id = unloadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as unloadpointState_id,
+				 	states.state_name as unloadpointState_name
+				 from
+				 	states
+			 ) as unloadpointState on unloadpoint_stateid = unloadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as unlocalitiesLocality_id,
+				 	localities.locality_short_type as unlocalitiesLocalityShort_type
+				from
+				 	localities
+			 ) as unloadpointLocalities on unloadpoint_localityid = unlocalitiesLocality_id
+			 /* подгружаем словесное описание статуса заявки */
+			 left join(
+			 	select
+					tickets_statuses.ticket_status_id as ticketsStatusesStatus_id,
+				 	tickets_statuses.ticket_status_name as ticketsStatusesStatus_name
+				from tickets_statuses
+			 ) as ticketsStatuses on t.status_id = ticketsStatusesStatus_id
+			 /* подгружаем название компании - погрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as loadCompany_id,
+				 	organizations.name as loadCompany_name
+				from organizations
+			 ) as loadCompany on t.load_organization_id = loadCompany_id
+			 /* подгружаем название компании - выгрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as unloadCompany_id,
+				 	organizations.name as unloadCompany_name
+				from organizations
+			 ) as unloadCompany on t.unload_organization_id = unloadCompany_id
+			 /* подгружаем имя логиста */
+			 left join(
+				 select
+				 	persons.person_id as logistPerson_id,
+				 	persons.name as logistPerson_name,
+				 	persons.surname as logistPerson_surname,
+				 	persons.patronymic as logistPerson_patronymic
+				 from persons
+			 ) as logistPerson on t.logist_person_id = logistPerson_id
+WHERE      t.creation_datetime > '2018-10-01 00:00:00 +3:00'
+      AND t.creation_datetime < '2018-10-31 23:59:59 +3:00'
+2018-10-22T11:09:11.669Z [DEBUG] messages: Send data: getReport_dayReport. To: VPjvF_iBx3_v7CjfAAAJ
+2018-10-22T11:09:47.164Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T11:09:47.191Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/reports';
+2018-10-22T11:09:47.193Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/reports' AND users.user_id=1;
+2018-10-22T11:09:47.195Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T11:09:47.321Z [DEBUG] io: Client connected:  al8taZP5PL8giW-lAAAK
+2018-10-22T11:09:51.958Z [DEBUG] commands: Command: getReport_periodReport. From: al8taZP5PL8giW-lAAAK
+2018-10-22T11:09:51.958Z [DEBUG] db: DB query: SELECT COUNT(*)             FROM commands                 INNER JOIN permissions ON commands.permission_id = permissions.permission_id                 INNER JOIN groups_permissions ON permissions.permission_id = groups_permissions.permission_id                 INNER JOIN groups ON groups_permissions.group_id = groups.group_id                 INNER JOIN users_groups ON groups.group_id = users_groups.group_id                 INNER JOIN users ON users.user_id = users_groups.user_id             WHERE                 commands.name = 'getReport_periodReport'                 AND users.login = 'admin';
+2018-10-22T11:09:51.963Z [DEBUG] commands: Granted command  getReport_periodReport  for user admin
+2018-10-22T11:09:51.964Z [DEBUG] db: DB query: SELECT 	
+	loadpointState.loadpointState_name,
+	loadpointLocalities.localitiesLocalityShort_type,
+	loadpoint.loadpoint_localityname,
+	unloadpointState.unloadpointState_name,
+	unloadpointLocalities.unlocalitiesLocalityShort_type,
+	unloadpoint.unloadpoint_localityname,
+	ticketsStatuses.ticketsStatusesStatus_name,
+	loadCompany.loadCompany_name,
+	unloadCompany.unloadCompany_name,
+	logistPerson.logistPerson_surname,
+	logistPerson.logistPerson_name,
+	logistPerson.logistPerson_patronymic,
+	t.weight,
+	t.volume,
+	t.closed_cost
+	FROM tickets AS t
+			 /*следующие 3 join подгружают местоположение места погрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as loadpoint_id,
+				 	points.state_id as loadpoint_stateid,
+				 	points.locality_id as loadpoint_localityid,
+				 	points.locality_name as loadpoint_localityname
+				 from points
+			 ) as loadpoint on t.load_point_id = loadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as loadpointState_id,
+				 	states.state_name as loadpointState_name
+				 from
+				 	states
+			 ) as loadpointState on loadpoint_stateid = loadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as localitiesLocality_id,
+				 	localities.locality_short_type as localitiesLocalityShort_type
+				from
+				 	localities
+			 ) as loadpointLocalities on loadpoint_localityid = localitiesLocality_id
+			/*следующие 3 join подгружают местоположение места выгрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as unloadpoint_id,
+				 	points.state_id as unloadpoint_stateid,
+				 	points.locality_id as unloadpoint_localityid,
+				 	points.locality_name as unloadpoint_localityname
+				 from points
+			 ) as unloadpoint on t.unload_point_id = unloadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as unloadpointState_id,
+				 	states.state_name as unloadpointState_name
+				 from
+				 	states
+			 ) as unloadpointState on unloadpoint_stateid = unloadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as unlocalitiesLocality_id,
+				 	localities.locality_short_type as unlocalitiesLocalityShort_type
+				from
+				 	localities
+			 ) as unloadpointLocalities on unloadpoint_localityid = unlocalitiesLocality_id
+			 /* подгружаем словесное описание статуса заявки */
+			 left join(
+			 	select
+					tickets_statuses.ticket_status_id as ticketsStatusesStatus_id,
+				 	tickets_statuses.ticket_status_name as ticketsStatusesStatus_name
+				from tickets_statuses
+			 ) as ticketsStatuses on t.status_id = ticketsStatusesStatus_id
+			 /* подгружаем название компании - погрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as loadCompany_id,
+				 	organizations.name as loadCompany_name
+				from organizations
+			 ) as loadCompany on t.load_organization_id = loadCompany_id
+			 /* подгружаем название компании - выгрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as unloadCompany_id,
+				 	organizations.name as unloadCompany_name
+				from organizations
+			 ) as unloadCompany on t.unload_organization_id = unloadCompany_id
+			 /* подгружаем имя логиста */
+			 left join(
+				 select
+				 	persons.person_id as logistPerson_id,
+				 	persons.name as logistPerson_name,
+				 	persons.surname as logistPerson_surname,
+				 	persons.patronymic as logistPerson_patronymic
+				 from persons
+			 ) as logistPerson on t.logist_person_id = logistPerson_id
+WHERE t.status_id IN (1,2,3,4) AND      t.creation_datetime > '2018-10-01 00:00:00 +3:00'
+      AND t.creation_datetime < '2018-10-31 23:59:59 +3:00'
+2018-10-22T11:09:51.969Z [DEBUG] messages: Send data: getReport_dayReport. To: al8taZP5PL8giW-lAAAK
+2018-10-22T11:09:56.039Z [DEBUG] commands: Command: getReport_periodReport. From: al8taZP5PL8giW-lAAAK
+2018-10-22T11:09:56.040Z [DEBUG] db: DB query: SELECT COUNT(*)             FROM commands                 INNER JOIN permissions ON commands.permission_id = permissions.permission_id                 INNER JOIN groups_permissions ON permissions.permission_id = groups_permissions.permission_id                 INNER JOIN groups ON groups_permissions.group_id = groups.group_id                 INNER JOIN users_groups ON groups.group_id = users_groups.group_id                 INNER JOIN users ON users.user_id = users_groups.user_id             WHERE                 commands.name = 'getReport_periodReport'                 AND users.login = 'admin';
+2018-10-22T11:09:56.042Z [DEBUG] commands: Granted command  getReport_periodReport  for user admin
+2018-10-22T11:09:56.043Z [DEBUG] db: DB query: SELECT 	
+	loadpointState.loadpointState_name,
+	loadpointLocalities.localitiesLocalityShort_type,
+	loadpoint.loadpoint_localityname,
+	unloadpointState.unloadpointState_name,
+	unloadpointLocalities.unlocalitiesLocalityShort_type,
+	unloadpoint.unloadpoint_localityname,
+	ticketsStatuses.ticketsStatusesStatus_name,
+	loadCompany.loadCompany_name,
+	unloadCompany.unloadCompany_name,
+	logistPerson.logistPerson_surname,
+	logistPerson.logistPerson_name,
+	logistPerson.logistPerson_patronymic,
+	t.weight,
+	t.volume,
+	t.closed_cost
+	FROM tickets AS t
+			 /*следующие 3 join подгружают местоположение места погрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as loadpoint_id,
+				 	points.state_id as loadpoint_stateid,
+				 	points.locality_id as loadpoint_localityid,
+				 	points.locality_name as loadpoint_localityname
+				 from points
+			 ) as loadpoint on t.load_point_id = loadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as loadpointState_id,
+				 	states.state_name as loadpointState_name
+				 from
+				 	states
+			 ) as loadpointState on loadpoint_stateid = loadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as localitiesLocality_id,
+				 	localities.locality_short_type as localitiesLocalityShort_type
+				from
+				 	localities
+			 ) as loadpointLocalities on loadpoint_localityid = localitiesLocality_id
+			/*следующие 3 join подгружают местоположение места выгрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as unloadpoint_id,
+				 	points.state_id as unloadpoint_stateid,
+				 	points.locality_id as unloadpoint_localityid,
+				 	points.locality_name as unloadpoint_localityname
+				 from points
+			 ) as unloadpoint on t.unload_point_id = unloadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as unloadpointState_id,
+				 	states.state_name as unloadpointState_name
+				 from
+				 	states
+			 ) as unloadpointState on unloadpoint_stateid = unloadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as unlocalitiesLocality_id,
+				 	localities.locality_short_type as unlocalitiesLocalityShort_type
+				from
+				 	localities
+			 ) as unloadpointLocalities on unloadpoint_localityid = unlocalitiesLocality_id
+			 /* подгружаем словесное описание статуса заявки */
+			 left join(
+			 	select
+					tickets_statuses.ticket_status_id as ticketsStatusesStatus_id,
+				 	tickets_statuses.ticket_status_name as ticketsStatusesStatus_name
+				from tickets_statuses
+			 ) as ticketsStatuses on t.status_id = ticketsStatusesStatus_id
+			 /* подгружаем название компании - погрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as loadCompany_id,
+				 	organizations.name as loadCompany_name
+				from organizations
+			 ) as loadCompany on t.load_organization_id = loadCompany_id
+			 /* подгружаем название компании - выгрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as unloadCompany_id,
+				 	organizations.name as unloadCompany_name
+				from organizations
+			 ) as unloadCompany on t.unload_organization_id = unloadCompany_id
+			 /* подгружаем имя логиста */
+			 left join(
+				 select
+				 	persons.person_id as logistPerson_id,
+				 	persons.name as logistPerson_name,
+				 	persons.surname as logistPerson_surname,
+				 	persons.patronymic as logistPerson_patronymic
+				 from persons
+			 ) as logistPerson on t.logist_person_id = logistPerson_id
+WHERE      t.creation_datetime > '2018-10-01 00:00:00 +3:00'
+      AND t.creation_datetime < '2018-10-31 23:59:59 +3:00'
+2018-10-22T11:09:56.047Z [DEBUG] messages: Send data: getReport_dayReport. To: al8taZP5PL8giW-lAAAK
+2018-10-22T11:15:42.663Z [DEBUG] db: DB query: SELECT * FROM states ORDER BY state_name
+2018-10-22T11:15:42.668Z [DEBUG] db: DB query: SELECT * FROM localities ORDER BY locality_type
+2018-10-22T11:15:42.669Z [DEBUG] db: DB query: SELECT * FROM load_types ORDER BY load_type_id
+2018-10-22T11:15:42.670Z [DEBUG] db: DB query: SELECT * FROM pages         ORDER BY page_id ASC;
+2018-10-22T11:15:42.839Z [DEBUG] db: DB query: SELECT *, permissions.description FROM permissions            INNER JOIN pages ON permissions.owner_page_id = pages.page_id        ORDER BY pages.page_id;
+2018-10-22T11:15:43.735Z [DEBUG] io: Client connected:  0pfK1zSgZ5V2ZzzAAAAA
+2018-10-22T11:15:43.738Z [DEBUG] messages: Send command: logout. To: 0pfK1zSgZ5V2ZzzAAAAA
+2018-10-22T11:15:43.908Z [DEBUG] io: Client connected:  mcRBsuUbh_QJQlzKAAAB
+2018-10-22T11:15:50.761Z [DEBUG] commands: Command: logon. From: mcRBsuUbh_QJQlzKAAAB
+2018-10-22T11:15:50.762Z [DEBUG] db: DB query: SELECT * FROM users WHERE login = 'admin' AND password_hash = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918' AND enable = TRUE;
+2018-10-22T11:15:50.775Z [DEBUG] db: DB query: SELECT * FROM persons WHERE person_id=1;
+2018-10-22T11:15:50.787Z [DEBUG] commands: Logon granted for: admin. From: mcRBsuUbh_QJQlzKAAAB
+2018-10-22T11:15:50.788Z [DEBUG] users: Add user: admin, SessionID: n0G7wXnW2d2H3DI1vrS46IyI4ebnwBsJ
+2018-10-22T11:15:50.789Z [INFO]  users: User admin was added
+2018-10-22T11:15:50.789Z [DEBUG] messages: Send command: logon. To: mcRBsuUbh_QJQlzKAAAB
+2018-10-22T11:15:50.804Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T11:15:50.816Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/';
+2018-10-22T11:15:50.817Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/' AND users.user_id=1;
+2018-10-22T11:15:50.819Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T11:15:50.907Z [DEBUG] io: Client connected:  C4AvfQNu6mUmwQdBAAAC
+2018-10-22T11:15:52.077Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T11:15:52.079Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/reports';
+2018-10-22T11:15:52.080Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/reports' AND users.user_id=1;
+2018-10-22T11:15:52.081Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T11:15:52.183Z [DEBUG] io: Client connected:  ETiNUyWNfga-hnM6AAAD
+2018-10-22T11:15:56.822Z [DEBUG] commands: Command: getReport_periodReport. From: ETiNUyWNfga-hnM6AAAD
+2018-10-22T11:15:56.823Z [DEBUG] db: DB query: SELECT COUNT(*)             FROM commands                 INNER JOIN permissions ON commands.permission_id = permissions.permission_id                 INNER JOIN groups_permissions ON permissions.permission_id = groups_permissions.permission_id                 INNER JOIN groups ON groups_permissions.group_id = groups.group_id                 INNER JOIN users_groups ON groups.group_id = users_groups.group_id                 INNER JOIN users ON users.user_id = users_groups.user_id             WHERE                 commands.name = 'getReport_periodReport'                 AND users.login = 'admin';
+2018-10-22T11:15:56.848Z [DEBUG] commands: Granted command  getReport_periodReport  for user admin
+2018-10-22T11:15:56.852Z [DEBUG] db: DB query: SELECT 	
+	loadpointState.loadpointState_name,
+	loadpointLocalities.localitiesLocalityShort_type,
+	loadpoint.loadpoint_localityname,
+	unloadpointState.unloadpointState_name,
+	unloadpointLocalities.unlocalitiesLocalityShort_type,
+	unloadpoint.unloadpoint_localityname,
+	ticketsStatuses.ticketsStatusesStatus_name,
+	loadCompany.loadCompany_name,
+	unloadCompany.unloadCompany_name,
+	logistPerson.logistPerson_surname,
+	logistPerson.logistPerson_name,
+	logistPerson.logistPerson_patronymic,
+	t.weight,
+	t.volume,
+	t.closed_cost
+	FROM tickets AS t
+			 /*следующие 3 join подгружают местоположение места погрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as loadpoint_id,
+				 	points.state_id as loadpoint_stateid,
+				 	points.locality_id as loadpoint_localityid,
+				 	points.locality_name as loadpoint_localityname
+				 from points
+			 ) as loadpoint on t.load_point_id = loadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as loadpointState_id,
+				 	states.state_name as loadpointState_name
+				 from
+				 	states
+			 ) as loadpointState on loadpoint_stateid = loadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as localitiesLocality_id,
+				 	localities.locality_short_type as localitiesLocalityShort_type
+				from
+				 	localities
+			 ) as loadpointLocalities on loadpoint_localityid = localitiesLocality_id
+			/*следующие 3 join подгружают местоположение места выгрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as unloadpoint_id,
+				 	points.state_id as unloadpoint_stateid,
+				 	points.locality_id as unloadpoint_localityid,
+				 	points.locality_name as unloadpoint_localityname
+				 from points
+			 ) as unloadpoint on t.unload_point_id = unloadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as unloadpointState_id,
+				 	states.state_name as unloadpointState_name
+				 from
+				 	states
+			 ) as unloadpointState on unloadpoint_stateid = unloadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as unlocalitiesLocality_id,
+				 	localities.locality_short_type as unlocalitiesLocalityShort_type
+				from
+				 	localities
+			 ) as unloadpointLocalities on unloadpoint_localityid = unlocalitiesLocality_id
+			 /* подгружаем словесное описание статуса заявки */
+			 left join(
+			 	select
+					tickets_statuses.ticket_status_id as ticketsStatusesStatus_id,
+				 	tickets_statuses.ticket_status_name as ticketsStatusesStatus_name
+				from tickets_statuses
+			 ) as ticketsStatuses on t.status_id = ticketsStatusesStatus_id
+			 /* подгружаем название компании - погрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as loadCompany_id,
+				 	organizations.name as loadCompany_name
+				from organizations
+			 ) as loadCompany on t.load_organization_id = loadCompany_id
+			 /* подгружаем название компании - выгрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as unloadCompany_id,
+				 	organizations.name as unloadCompany_name
+				from organizations
+			 ) as unloadCompany on t.unload_organization_id = unloadCompany_id
+			 /* подгружаем имя логиста */
+			 left join(
+				 select
+				 	persons.person_id as logistPerson_id,
+				 	persons.name as logistPerson_name,
+				 	persons.surname as logistPerson_surname,
+				 	persons.patronymic as logistPerson_patronymic
+				 from persons
+			 ) as logistPerson on t.logist_person_id = logistPerson_id
+WHERE t.status_id IN (1,2,3,4) AND      t.creation_datetime > '2018-10-01 00:00:00 +3:00'
+      AND t.creation_datetime < '2018-10-31 23:59:59 +3:00'
+2018-10-22T11:15:56.882Z [DEBUG] messages: Send data: getReport_periodReport. To: ETiNUyWNfga-hnM6AAAD
+2018-10-22T11:19:59.023Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T11:19:59.074Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/js/luxon.min.js.map';
+2018-10-22T11:20:03.381Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T11:20:03.390Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/reports';
+2018-10-22T11:20:03.393Z [DEBUG] db: DB query: SELECT * FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             pages.url='/reports' AND users.user_id=1;
+2018-10-22T11:20:03.397Z [DEBUG] db: DB query: SELECT page_id, url, path, title, description, icon, menu_level, menu_index, parent_page_id FROM pages             INNER JOIN groups_permissions ON pages.view_permission_id = groups_permissions.permission_id             INNER JOIN users_groups ON groups_permissions.group_id = users_groups.group_id             INNER JOIN users ON users_groups.user_id = users.user_id         WHERE             users.user_id = 1 ORDER BY page_id ASC;
+2018-10-22T11:20:03.531Z [DEBUG] io: Client connected:  T91bbwROu2yDoHbRAAAE
+2018-10-22T11:20:21.591Z [DEBUG] commands: Command: getReport_periodReport. From: T91bbwROu2yDoHbRAAAE
+2018-10-22T11:20:21.591Z [DEBUG] db: DB query: SELECT COUNT(*)             FROM commands                 INNER JOIN permissions ON commands.permission_id = permissions.permission_id                 INNER JOIN groups_permissions ON permissions.permission_id = groups_permissions.permission_id                 INNER JOIN groups ON groups_permissions.group_id = groups.group_id                 INNER JOIN users_groups ON groups.group_id = users_groups.group_id                 INNER JOIN users ON users.user_id = users_groups.user_id             WHERE                 commands.name = 'getReport_periodReport'                 AND users.login = 'admin';
+2018-10-22T11:20:21.633Z [DEBUG] commands: Granted command  getReport_periodReport  for user admin
+2018-10-22T11:20:21.634Z [DEBUG] db: DB query: SELECT 	
+	loadpointState.loadpointState_name,
+	loadpointLocalities.localitiesLocalityShort_type,
+	loadpoint.loadpoint_localityname,
+	unloadpointState.unloadpointState_name,
+	unloadpointLocalities.unlocalitiesLocalityShort_type,
+	unloadpoint.unloadpoint_localityname,
+	ticketsStatuses.ticketsStatusesStatus_name,
+	loadCompany.loadCompany_name,
+	unloadCompany.unloadCompany_name,
+	logistPerson.logistPerson_surname,
+	logistPerson.logistPerson_name,
+	logistPerson.logistPerson_patronymic,
+	t.weight,
+	t.volume,
+	t.closed_cost
+	FROM tickets AS t
+			 /*следующие 3 join подгружают местоположение места погрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as loadpoint_id,
+				 	points.state_id as loadpoint_stateid,
+				 	points.locality_id as loadpoint_localityid,
+				 	points.locality_name as loadpoint_localityname
+				 from points
+			 ) as loadpoint on t.load_point_id = loadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as loadpointState_id,
+				 	states.state_name as loadpointState_name
+				 from
+				 	states
+			 ) as loadpointState on loadpoint_stateid = loadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as localitiesLocality_id,
+				 	localities.locality_short_type as localitiesLocalityShort_type
+				from
+				 	localities
+			 ) as loadpointLocalities on loadpoint_localityid = localitiesLocality_id
+			/*следующие 3 join подгружают местоположение места выгрузки*/
+			 left join (
+			 /* выборка региона погрузки */
+				 select 
+				 	points.point_id as unloadpoint_id,
+				 	points.state_id as unloadpoint_stateid,
+				 	points.locality_id as unloadpoint_localityid,
+				 	points.locality_name as unloadpoint_localityname
+				 from points
+			 ) as unloadpoint on t.unload_point_id = unloadpoint_id
+			 /* подгружаем наименование региона */
+			 left join (
+				 select
+				 	states.state_id as unloadpointState_id,
+				 	states.state_name as unloadpointState_name
+				 from
+				 	states
+			 ) as unloadpointState on unloadpoint_stateid = unloadpointState_id
+			 /* подгружаем наименование места - город, поселок и т.д. */
+			 left join(
+			 	select
+					localities.locality_id as unlocalitiesLocality_id,
+				 	localities.locality_short_type as unlocalitiesLocalityShort_type
+				from
+				 	localities
+			 ) as unloadpointLocalities on unloadpoint_localityid = unlocalitiesLocality_id
+			 /* подгружаем словесное описание статуса заявки */
+			 left join(
+			 	select
+					tickets_statuses.ticket_status_id as ticketsStatusesStatus_id,
+				 	tickets_statuses.ticket_status_name as ticketsStatusesStatus_name
+				from tickets_statuses
+			 ) as ticketsStatuses on t.status_id = ticketsStatusesStatus_id
+			 /* подгружаем название компании - погрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as loadCompany_id,
+				 	organizations.name as loadCompany_name
+				from organizations
+			 ) as loadCompany on t.load_organization_id = loadCompany_id
+			 /* подгружаем название компании - выгрузка */
+			 left join(
+			 	select 
+					organizations.organization_id as unloadCompany_id,
+				 	organizations.name as unloadCompany_name
+				from organizations
+			 ) as unloadCompany on t.unload_organization_id = unloadCompany_id
+			 /* подгружаем имя логиста */
+			 left join(
+				 select
+				 	persons.person_id as logistPerson_id,
+				 	persons.name as logistPerson_name,
+				 	persons.surname as logistPerson_surname,
+				 	persons.patronymic as logistPerson_patronymic
+				 from persons
+			 ) as logistPerson on t.logist_person_id = logistPerson_id
+WHERE t.status_id IN (1,2,3,4) AND      t.creation_datetime > '2018-10-01 00:00:00 +3:00'
+      AND t.creation_datetime < '2018-10-31 23:59:59 +3:00'
+2018-10-22T11:20:21.672Z [DEBUG] messages: Send data: getReport_periodReport. To: T91bbwROu2yDoHbRAAAE
+2018-10-22T11:20:43.861Z [DEBUG] db: DB query: SELECT p.permission_id, p.name FROM users AS u            INNER JOIN users_groups ug ON u.user_id = ug.user_id            INNER JOIN groups_permissions gp ON gp.group_id = ug.group_id            INNER JOIN permissions p ON gp.permission_id = p.permission_id        WHERE u.user_id = 1;
+2018-10-22T11:20:43.889Z [DEBUG] db: DB query: SELECT * FROM pages WHERE url='/js/luxon.min.js.map';
